@@ -12,7 +12,7 @@ class blockWorld:
         self.objects = {"block": 3}
 
         for i in range(self.objects["block"]):
-            self.on[f"block_{i}"] = None
+            self.on[i] = None
         self.types = ["block"]
         self.predicates_arity = {"block": {"on": ("block","block"), "clear": ("block"), "holding": ("block")}}
         self.global_predicates = {"hand_free": True}
@@ -23,7 +23,8 @@ class blockWorld:
         self.action_map = {
             "stack": self.stack,
             "pick": self.pick,
-            "putdown": self.putdown
+            "putdown": self.putdown,
+            "unstack": self.unstack
         }
         self.create_token_map()
 
@@ -32,7 +33,7 @@ class blockWorld:
         for type in self.types:
             self.objects_to_propositions[type] = dict()
             for obj in range(self.objects[type]):
-                self.objects_to_propositions[type][f"{obj}"] = (False, True, False)  # (on, clear, holding)
+                self.objects_to_propositions[type][obj] = (False, True, False)  # (on, clear, holding)
 
     def stack(self, block1, block2):
         if self.objects_to_propositions[block1][1] and self.objects_to_propositions[block2][2]:
@@ -45,64 +46,67 @@ class blockWorld:
         return False
 
     def pick(self, block):
-        if self.objects_to_propositions[block][1]:
+        if self.objects_to_propositions["block"][block][1]:
             self.current_state["holding"] = block
             if self.on.get(f"block_{block}") != None:
                 self.current_state["on"].remove((self.on[block], block))
                 self.on[block] = None
                 self.global_predicates["hand_free"] = False
-            self.objects_to_propositions[block] = (True, False, True)
+            self.objects_to_propositionstrace[block] = (True, False, True)
             return True
         return False
     
     def putdown(self, block):
-        if self.objects_to_propositions[block][2]:
-            self.objects_to_propositions[block] = (False, True, False)
+        if self.objects_to_propositions["block"][block][2]:
+            self.objects_to_propositions["block"][block] = (False, True, False)
             self.global_predicates["hand_free"] = True
             return True
         return False
 
     def unstack(self, block1, block2):
-        if self.objects_to_propositions[block1][2] and self.objects_to_propositions[block2][0]:
+        if self.objects_to_propositions["block"][block1][2] and self.objects_to_propositions["block"][block2][0]:
             self.current_state["on"].remove((block1, block2))
             self.on[block2] = None
-            self.objects_to_propositions[block1] = (False, True, False)
-            self.objects_to_propositions[block2] = (self.on["on"](block1, block2), False, False)
+            self.objects_to_propositions["block"][block1] = (False, True, False)
+            self.objects_to_propositions["block"][block2] = (self.on["on"](block1, block2), False, False)
             self.global_predicates["hand_free"] = True
             return True
         return False
     
 
-    def next_trace(self):
-        action = rd.choice(self.actions)
-        if action == "stack":
-            block1 = rd.choice([f"{i}" for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
-            block2 = rd.choice([f"{i}" for i in range(self.objects["block"]) if i != block1 and self.objects_to_propositions["block"][1] and
-                               self.objects_to_propositions["block"][i][2]] and self.global_predicates["hand_free"])
-            if self.stack(block1, block2):
-                return action
-            
+    def choose_action(self):
+        if self.global_predicates["hand_free"]:
+            action = rd.choice(["unstack", "pick"])
+            if action == "unstack":
+                block1 = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1] and
+                                    self.on[i] is not None])
+                if block1:
+                    block2 = self.on[block1]
+                    return (action, ("block", block1), ("block", block2))
+                else:
+                    block = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
+                    return (action, ("block", block))
+            else:
+                block = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
+                return (action, ("block", block))
+        else:
+            action =  rd.choice(["putdown", "stack"])
+            if action == "putdown":
+                block = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][2]])
+                return (action, ("block", block))
+            else:
+                block1 = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
+                block2 = rd.choice([i for i in range(self.objects["block"]) if i != block1 and self.objects_to_propositions["block"][1] and
+                                   self.objects_to_propositions["block"][i][2]] and self.global_predicates["hand_free"])
+                return (action, ("block", block1), ("block", block2))
 
-        elif action == "pick":
-            block = rd.choice([f"{i}" for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]] and self.global_predicates["hand_free"])
-            if self.pick(block):
-                return action
-            
-
-
-        elif action == "putdown":
-            block = rd.choice([f"block_{i}" for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][2]])
-            if self.putdown(block):
-                return action
-            
-
-        elif action == "unstack":
-            block1 = rd.choice([f"block_{i}" for i in range(self.objects["block"])])
-            block2 = rd.choice([f"block_{i}" for i in range(self.objects["block"]) if i != block1])
-            if self.unstack(block1, block2):
-                return action
-            
-        return action
+    def next_trace(self,action):
+        suc = False
+        action_func = self.action_map.get(action[0])
+        params = [obj[1] for obj in action[1:]]
+        if action_func and params:
+            suc = action_func(*params)
+        return suc
     
     def get_tokens(self,action):
         tokens = [self.get_actionTokens(action)]
@@ -117,20 +121,20 @@ class blockWorld:
         return tokens
     
     def get_actionTokens(self, action):
+        indx = list(self.action_map.keys()).index(action[0])
         token = np.zeros(self.token_size)
-        token[0] = 1  # action token
+        token[indx] = 1  # action token
         return token
 
     def create_token_map(self):
         token_map = {}
         for i, (pred, _) in enumerate((self.predicates_arity["block"] | self.global_predicates).items()):
-            token_map[pred] = i
+            token_map[pred] = i + 4
         self.token_map = token_map
-
 
     def get_predicate_Tokens(self, type, obj, instace):
         preds = self.predicates_arity[type].keys()
-        props = self.objects_to_propositions[type][str(obj)]
+        props = self.objects_to_propositions[type][obj]
         tokens = []
         for i,pred in enumerate(preds):
             token = np.zeros(self.token_size)
@@ -153,3 +157,6 @@ class blockWorld:
             tokens.append(token)
         return tokens
     # token - [......,indx,bool value,placement ]
+
+    def init(self):
+        self.__init__()
