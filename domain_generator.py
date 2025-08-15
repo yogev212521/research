@@ -9,14 +9,14 @@ class blockWorld:
         self.actions = [("stack", "block", "block"), ("pick", "block"), ("putdown", "block"), ("unstack", "block", "block")]
         self.current_state = {"on": [], "clear": {}, "holding": {}}
         self.on = dict()
-        self.objects = {"block": 3}
+        self.objects = {"block": 5}
 
         for i in range(self.objects["block"]):
             self.on[i] = None
         self.types = ["block"]
         self.predicates_arity = {"block": {"on": ("block","block"), "clear": ("block"), "holding": ("block")}}
         self.global_predicates = {"hand_free": True}
-        self.on = {"on" : lambda block1, block2: (block1, block2) in self.current_state["on"]}
+        self.current_state = {"on" : lambda block1, block2: (block1, block2) in self.current_state["on"]}
 
         self.create_objects_to_prop()
 
@@ -48,11 +48,11 @@ class blockWorld:
     def pick(self, block):
         if self.objects_to_propositions["block"][block][1]:
             self.current_state["holding"] = block
-            if self.on.get(f"block_{block}") != None:
+            if self.on.get(block) != None:
                 self.current_state["on"].remove((self.on[block], block))
                 self.on[block] = None
                 self.global_predicates["hand_free"] = False
-            self.objects_to_propositionstrace[block] = (True, False, True)
+            self.objects_to_propositions["block"][block] = (True, False, True)
             return True
         return False
     
@@ -78,14 +78,18 @@ class blockWorld:
         if self.global_predicates["hand_free"]:
             action = rd.choice(["unstack", "pick"])
             if action == "unstack":
-                block1 = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1] and
-                                    self.on[i] is not None])
+                try:
+                    block1 = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1] and
+                                        self.on[i] is not None])
+                except:
+                    block1 = None
                 if block1:
+                    
                     block2 = self.on[block1]
                     return (action, ("block", block1), ("block", block2))
                 else:
                     block = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
-                    return (action, ("block", block))
+                    return ("pick", ("block", block))
             else:
                 block = rd.choice([i for i in range(self.objects["block"]) if self.objects_to_propositions["block"][i][1]])
                 return (action, ("block", block))
