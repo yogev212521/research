@@ -23,7 +23,7 @@ class Att_PAM(nn.Module):
         
         self.embedding_out = nn.Embedding(output_dim, embed_dim)
      
-    def forward(self,x ,test=False, batch = 100):
+    def forward(self,x):
         x = self.embedding_in(x)
 
         x1, _ = self.att1(x, x, x)
@@ -61,14 +61,10 @@ class Att_PAM(nn.Module):
                 inital_states = torch.from_numpy(inital_states).float()
                 running_loss = 0.0
                 for i, ground_action in enumerate(tr_traces, 0):
-                    if i %2 == 1:
-                        inital_states = torch.from_numpy(ground_action).float()
-                        continue
                     ground_action = torch.from_numpy(ground_action).float()
                     optimizer.zero_grad()
-
                     outputs = self(inital_states)
-                    loss = criterion(outputs, )
+                    loss = criterion(outputs, ground_action)
                     loss.backward()
                     optimizer.step()
                     running_loss += loss.item()
