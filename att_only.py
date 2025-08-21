@@ -7,7 +7,8 @@ class Att_PAM(nn.Module):
 
     def __init__(self, output_dim, embed_dim,input_dim, head_number):
         super(Att_PAM, self).__init__()
-        self.embedding_in = nn.Embedding(input_dim, embed_dim)
+        self.embedding_in = nn.Linear(input_dim, embed_dim)
+        self.embed_dim = embed_dim
 
         self.att1 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
         self.att2 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
@@ -20,9 +21,9 @@ class Att_PAM(nn.Module):
         self.ff1 = nn.Linear(embed_dim, embed_dim)
         self.ff2 = nn.Linear(embed_dim, embed_dim)
         self.ff3 = nn.Linear(embed_dim, embed_dim)
-        
-        self.embedding_out = nn.Embedding(output_dim, embed_dim)
-     
+
+        self.embedding_out = nn.Linear(embed_dim, output_dim)
+
     def forward(self,x):
         x = self.embedding_in(x)
 
@@ -45,32 +46,38 @@ class Att_PAM(nn.Module):
         x = nn.Dropout(0.1)(x)
         x = self.norm3(x3 + x)
         f3 = self.ff3(x)
-        f3 = nn.LeakyReLU()(f3)
+        f3 = nn.ReLU()(f3)
         x = nn.LayerNorm(self.embed_dim)(f3 + x)
 
         x = self.embedding_out(x)
+        x = nn.ReLU()(x)
         return x
     
-    def train(self, All_traces , lr=0.001, iterations = 10):
-        criterion = nn.MSELoss()
+    def train(self, All_traces , lr=0.0005, iterations = 10):
+        criterion = nn.CrossEntropyLoss()
         optimizer = optim.Adam(self.parameters(), lr)
         for j in range(iterations):
             for epoch, traces in enumerate(All_traces):
                 tr_traces = np.transpose(traces, (1, 0, 2, 3))
-                inital_states = tr_traces[0]
-                inital_states = torch.from_numpy(inital_states).float()
                 running_loss = 0.0
-                for i, ground_action in enumerate(tr_traces, 0):
-                    ground_action = torch.from_numpy(ground_action).float()
+                for i, next_state in enumerate(tr_traces):
+                    if i%2 == 0:
+                        inital_state = torch.from_numpy(next_state).float()
+                        continue
+                    next_state = torch.from_numpy(next_state).float()
                     optimizer.zero_grad()
-                    outputs = self(inital_states)
-                    loss = criterion(outputs, ground_action)
+                    outputs = self(inital_state)
+                    loss = criterion(outputs, next_state)
                     loss.backward()
                     optimizer.step()
                     running_loss += loss.item()
-                    inital_states = ground_action
                     
                 print(f"Epoch {epoch + 1}, Loss: {running_loss / len(All_traces)}")
-            print(f"finished {j+1}/{iter}.")
+            print(f"finished {j+1}/{iterations}.")
         print("Training complete.")
 
+    def test(self, trace):
+        with torch.no_grad():
+            trace = torch.from_numpy(np.array([trace])).float()
+            prediction = self(trace)
+            return prediction.numpy()
