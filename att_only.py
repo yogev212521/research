@@ -7,31 +7,35 @@ class Att_PAM(nn.Module):
 
     def __init__(self, output_dim, embed_dim,input_dim, head_number):
         super(Att_PAM, self).__init__()
-        self.embedding_in = nn.Linear(input_dim, embed_dim)
+        self.embedding_in1 = nn.Linear(input_dim, embed_dim)
         self.embed_dim = embed_dim
 
         self.att1 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
         self.att2 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
         self.att3 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
+        self.att4 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
 
         self.norm1 = nn.LayerNorm(embed_dim)
         self.norm2 = nn.LayerNorm(embed_dim)
         self.norm3 = nn.LayerNorm(embed_dim)
+        self.norm4 = nn.LayerNorm(embed_dim)
 
         self.ff1 = nn.Linear(embed_dim, embed_dim)
         self.ff2 = nn.Linear(embed_dim, embed_dim)
         self.ff3 = nn.Linear(embed_dim, embed_dim)
+        self.ff4 = nn.Linear(embed_dim, embed_dim)
 
-        self.embedding_out = nn.Linear(embed_dim, output_dim)
+        self.embedding_out1 = nn.Linear(embed_dim, int(embed_dim/2))
+        self.embedding_out2 = nn.Linear(int(embed_dim/2), output_dim)
+
 
     def forward(self,x):
-        x = self.embedding_in(x)
-
+        x = self.embedding_in1(x)
         x1, _ = self.att1(x, x, x)
         x = nn.Dropout(0.1)(x)
         x = self.norm1(x1 + x)
         f1 = self.ff1(x)
-        f1 = nn.LeakyReLU()(f1)
+        f1 = nn.GELU()(f1)
         x = nn.LayerNorm(self.embed_dim)(f1 + x)
 
 
@@ -39,22 +43,32 @@ class Att_PAM(nn.Module):
         x = nn.Dropout(0.1)(x)
         x = self.norm2(x2 + x)
         f2 = self.ff2(x)
-        x = nn.LeakyReLU()(f2)
+        x = nn.GELU()(f2)
         x = nn.LayerNorm(self.embed_dim)(f2 + x)
 
         x3, _ = self.att3(x, x, x)
         x = nn.Dropout(0.1)(x)
         x = self.norm3(x3 + x)
         f3 = self.ff3(x)
-        f3 = nn.ReLU()(f3)
+        f3 = nn.GELU()(f3)
         x = nn.LayerNorm(self.embed_dim)(f3 + x)
 
-        x = self.embedding_out(x)
-        x = nn.ReLU()(x)
+        x3, _ = self.att3(x, x, x)
+        x = nn.Dropout(0.1)(x)
+        x = self.norm3(x3 + x)
+        f3 = self.ff3(x)
+        f3 = nn.GELU()(f3)
+        x = nn.LayerNorm(self.embed_dim)(f3 + x)
+
+        x = self.embedding_out1(x)
+        x = nn.GELU()(x)
+        x = self.embedding_out2(x)
+        x = nn.GELU()(x)
         return x
     
-    def train(self, All_traces , lr=0.0005, iterations = 10):
-        criterion = nn.CrossEntropyLoss()
+    def train(self, All_traces , lr=0.00001, iterations = 10):
+        criterion = nn.MSELoss()
+    
         optimizer = optim.Adam(self.parameters(), lr)
         for j in range(iterations):
             for epoch, traces in enumerate(All_traces):

@@ -109,8 +109,14 @@ class blockWorld:
     
     def get_tokens(self,action):
         tokens = [self.get_actionTokens(action)]
+        object_inst = dict()
         for (typ,obj) in action[1:]:
-            objects_tokens = self.get_predicate_Tokens(typ,obj,1)
+            if typ not in object_inst:
+                object_inst[typ] = 1
+            else:
+                object_inst[typ] += 1
+            inst = object_inst[typ]
+            objects_tokens = self.get_predicate_Tokens(typ,obj,inst)
             tokens.extend(objects_tokens)
         global_tokens = self.get_global_tokens()
         tokens.extend(global_tokens)
