@@ -2,7 +2,7 @@ import numpy as np
 import random as rd
 class blockWorld:
     def __init__(self):
-        self.token_size = 25
+        self.token_size = 30
         self.num_of_tokens = 30
         self.name = "blockworld"
         self.description = "A simple block world domain where blocks can be stacked."
@@ -68,9 +68,7 @@ class blockWorld:
             self.global_predicates["hand_free"] = True
             return True
         return False
-    
-# [25]
-# [......,1,0/1,1......]
+
     def choose_action(self):
         if self.global_predicates["hand_free"]:
             action = rd.choice(["unstack", "pick"])
@@ -107,7 +105,6 @@ class blockWorld:
         if action_func and params:
             suc = action_func(*params)
         return suc
-    
 
     def prob_next_trace(self,action):
         suc = False
@@ -118,6 +115,24 @@ class blockWorld:
         if action_func and params:
             suc = action_func(*params)
         return suc
+
+    def get_tokens_from(self, from_pred, from_action, action):
+        tokens = [self.get_actionTokens(action, from_action, from_pred)]
+        object_inst = dict()
+        for (typ,obj) in action[1:]:
+            if typ not in object_inst:
+                object_inst[typ] = 1
+            else:
+                object_inst[typ] += 1
+            inst = object_inst[typ]
+            objects_tokens = self.get_predicate_Tokens(typ,obj,inst,from_pred)
+            tokens.extend(objects_tokens)
+        global_tokens = self.get_global_tokens(from_pred=from_pred)
+        tokens.extend(global_tokens)
+        # fill all other tokens to the fixed size
+        while len(tokens) < self.num_of_tokens:
+            tokens.append(np.zeros(self.token_size + from_pred))
+        return tokens
     
     def get_tokens(self,action):
         tokens = [self.get_actionTokens(action)]
@@ -136,11 +151,11 @@ class blockWorld:
         while len(tokens) < self.num_of_tokens:
             tokens.append(np.zeros(self.token_size))
         return tokens
-    
-    def get_actionTokens(self, action):
+
+    def get_actionTokens(self, action, from_index = 0, added_size=0):
         indx = list(self.action_map.keys()).index(action[0])
-        token = np.zeros(self.token_size)
-        token[indx] = 1  # action token
+        token = np.zeros(self.token_size +added_size)
+        token[indx + from_index] = 1  # action token
         return token
 
     def create_token_map(self):
@@ -149,7 +164,7 @@ class blockWorld:
             token_map[pred] = i*3 + 4
         self.token_map = token_map
 
-    def get_predicate_Tokens(self, type, obj, instace):
+    def get_predicate_Tokens(self, type, obj, instance, from_pred = 0):
         preds = self.predicates_arity[type].keys()
         props = self.objects_to_propositions[type][obj]
         tokens = []
@@ -159,11 +174,14 @@ class blockWorld:
             token[indx] = 1
             if props[i]:
                 token[indx + 1] = 1
-            token[indx + 2] = instace
+            token[indx + 2] = instance
+            if from_pred > 0:
+                pre_tok = np.zeros(from_pred)
+                token = np.concatenate((pre_tok, token))
             tokens.append(token)
         return tokens
-    
-    def get_global_tokens(self):
+
+    def get_global_tokens(self, from_pred=0):
         tokens = []
         for pred in self.global_predicates:
             token = np.zeros(self.token_size)
@@ -171,6 +189,9 @@ class blockWorld:
             token[indx] = 1
             if self.global_predicates[pred]:
                 token[indx + 1] = 1
+            if from_pred > 0:
+                pre_tok = np.zeros(from_pred)
+                token = np.concatenate((pre_tok, token))
             tokens.append(token)
         return tokens
     # token - [......,indx,bool value,placement ]

@@ -5,7 +5,7 @@ from Domains.domain_generator import blockWorld
 from Domains.domain_generator import HanoiTowers
 from Domains.logistics_domain import LogisticsDomain 
 import numpy as np
-import att_only
+import Model.att_only as att_only
 
 def test_attention_model(domain, model, trace_length=8, prob=True):
     """
@@ -78,18 +78,18 @@ def test_attention_model(domain, model, trace_length=8, prob=True):
 # test_attention_model(domain, model, trace_length=5)
 
 
-def train_model(prob = False):
+def train_model(prob = False, model = None):
     batch_size = 20
     seq_length = 20
-    iterations = 20
+    iterations = 5
     traces = []
     for _ in range(100):  # Generate 100 traces
         trace = generate_trace_sequence(domain, seq_length=seq_length, prob=prob)
         traces.append(trace)
     traces = np.array(traces)
     traces = traces.reshape(traces.shape[0] // batch_size, batch_size, *traces.shape[1:])  # Reshape to match expected input dimensions
-    model = att_only.Att_PAM(output_dim=domain.token_size, embed_dim=256, input_dim=domain.token_size, head_number=8)
-    model.train(traces, lr=0.001, iterations=iterations)
+    model = att_only.Att_PAM(output_dim=domain.token_size, embed_dim=256, input_dim=domain.token_size, head_number=8) if model is None else model
+    model.train(traces, lr=0.0005, iterations=iterations)
     return model
 
 def generate_trace_sequence(domain, seq_length: int, prob = False):
@@ -113,13 +113,13 @@ def generate_trace_sequence(domain, seq_length: int, prob = False):
 domain = LogisticsDomain()
 batch_size = 10
 prob = True
-# model = att_only.Att_PAM(output_dim=domain.token_size, embed_dim=256, input_dim=domain.token_size, head_number=8)
+model = att_only.Att_PAM(output_dim=domain.token_size, embed_dim=256, input_dim=domain.token_size, head_number=8)
 # model.load_state_dict(torch.load("./Parameters/logistics_domain.pth"))
-model = train_model(prob=prob)
-torch.save(model.state_dict(), "./Parameters/logistics_domain.pth")
+model = train_model(prob=prob, model=model)
+torch.save(model.state_dict(), "./Parameters/logistics_domain_trained.pth")
 
-# trace = generate_trace_sequence(domain, seq_length=8, prob=prob)
-# prediction = model.test(trace=np.array(trace[0]))
+trace = generate_trace_sequence(domain, seq_length=8, prob=prob)
+prediction = model.test(trace=np.array(trace[0]))
 f = open("output.txt", "w")
 
 test_attention_model(domain, model, trace_length=8, prob=prob)

@@ -15,36 +15,19 @@ class LogisticsDomain:
         # Define objects in the domain
         self.objects = {"package": 3, "truck": 2, "airplane": 1, "location": 4}
         
-        # Initialize locations and object positions
-        self.locations = {}  # tracks what objects are at each location
-        self.vehicle_contents = {}  # tracks what packages are in each vehicle
-        self.object_locations = {}  # tracks where each object is located
+        # Centralized state management
+        self.state = {
+            # Track where each package is: either a location_id or ("vehicle_type", vehicle_id)
+            "package_locations": {},
+            # Track where each vehicle is: location_id
+            "vehicle_locations": {},
+            # Track which packages are in which vehicles
+            "vehicle_contents": {},
+            # Track what objects are at each location (excluding packages in vehicles)
+            "location_contents": {}
+        }
         
-        # Initialize locations as clear
-        for loc in range(self.objects["location"]):
-            self.locations[loc] = {"clear": True, "objects": []}
-        
-        # Initialize vehicle contents as empty
-        for truck in range(self.objects["truck"]):
-            self.vehicle_contents[("truck", truck)] = []
-        for plane in range(self.objects["airplane"]):
-            self.vehicle_contents[("airplane", plane)] = []
-        
-        # Place all objects at random locations initially
-        for pkg in range(self.objects["package"]):
-            loc = rd.randint(0, self.objects["location"] - 1)
-            self.object_locations[("package", pkg)] = loc
-            self.locations[loc]["objects"].append(("package", pkg))
-            
-        for truck in range(self.objects["truck"]):
-            loc = rd.randint(0, self.objects["location"] - 1)
-            self.object_locations[("truck", truck)] = loc
-            self.locations[loc]["objects"].append(("truck", truck))
-            
-        for plane in range(self.objects["airplane"]):
-            loc = rd.randint(0, self.objects["location"] - 1)
-            self.object_locations[("airplane", plane)] = loc
-            self.locations[loc]["objects"].append(("airplane", plane))
+        self._initialize_state()
         
         self.types = ["package", "truck", "airplane", "location"]
         self.predicates_arity = {
@@ -55,8 +38,6 @@ class LogisticsDomain:
         }
         self.global_predicates = {}
         
-        self.create_objects_to_prop()
-        
         self.action_map = {
             "load": self.load,
             "unload": self.unload,
@@ -65,200 +46,271 @@ class LogisticsDomain:
         }
         self.create_token_map()
 
-    def create_objects_to_prop(self):
-        self.objects_to_propositions = dict()
-        
-        # Initialize package propositions (at, in, loaded)
-        self.objects_to_propositions["package"] = dict()
+    def _initialize_state(self):
+        """Initialize the centralized state management system"""
+        # Initialize all data structures
         for pkg in range(self.objects["package"]):
-            is_at_location = True  # packages start at locations, not in vehicles
-            is_in_vehicle = False
-            is_loaded = False
-            self.objects_to_propositions["package"][pkg] = (is_at_location, is_in_vehicle, is_loaded)
-        
-        # Initialize truck propositions (at)
-        self.objects_to_propositions["truck"] = dict()
+            loc = rd.randint(0, self.objects["location"] - 1)
+            self.state["package_locations"][pkg] = loc
+            
         for truck in range(self.objects["truck"]):
-            is_at_location = True
-            self.objects_to_propositions["truck"][truck] = (is_at_location,)
-        
-        # Initialize airplane propositions (at)
-        self.objects_to_propositions["airplane"] = dict()
+            loc = rd.randint(0, self.objects["location"] - 1)
+            self.state["vehicle_locations"][("truck", truck)] = loc
+            self.state["vehicle_contents"][("truck", truck)] = []
+            
         for plane in range(self.objects["airplane"]):
-            is_at_location = True
-            self.objects_to_propositions["airplane"][plane] = (is_at_location,)
+            loc = rd.randint(0, self.objects["location"] - 1)
+            self.state["vehicle_locations"][("airplane", plane)] = loc
+            self.state["vehicle_contents"][("airplane", plane)] = []
         
-        # Initialize location propositions (clear)
-        self.objects_to_propositions["location"] = dict()
+        # Initialize location contents
         for loc in range(self.objects["location"]):
-            is_clear = self.locations[loc]["clear"]
-            self.objects_to_propositions["location"][loc] = (is_clear,)
+            self.state["location_contents"][loc] = {"packages": [], "vehicles": []}
+        
+        # Populate location contents based on initial positions
+        for pkg, loc in self.state["package_locations"].items():
+            if isinstance(loc, int):  # Package is at a location, not in a vehicle
+                self.state["location_contents"][loc]["packages"].append(pkg)
+        
+        for vehicle, loc in self.state["vehicle_locations"].items():
+            self.state["location_contents"][loc]["vehicles"].append(vehicle)
+
+    # Query methods for state management
+    def is_package_in_truck(self, pkg_id, truck_id):
+        """Check if a specific package is in a specific truck"""
+        truck_key = ("truck", truck_id)
+        return pkg_id in self.state["vehicle_contents"].get(truck_key, [])
+    
+    def is_package_in_airplane(self, pkg_id, plane_id):
+        """Check if a specific package is in a specific airplane"""
+        plane_key = ("airplane", plane_id)
+        return pkg_id in self.state["vehicle_contents"].get(plane_key, [])
+    
+    def is_package_in_vehicle(self, pkg_id, vehicle_type, vehicle_id):
+        """Check if a specific package is in a specific vehicle"""
+        vehicle_key = (vehicle_type, vehicle_id)
+        return pkg_id in self.state["vehicle_contents"].get(vehicle_key, [])
+    
+    def is_truck_at_location(self, truck_id, location_id):
+        """Check if a specific truck is at a specific location"""
+        truck_key = ("truck", truck_id)
+        return self.state["vehicle_locations"].get(truck_key) == location_id
+    
+    def is_airplane_at_location(self, plane_id, location_id):
+        """Check if a specific airplane is at a specific location"""
+        plane_key = ("airplane", plane_id)
+        return self.state["vehicle_locations"].get(plane_key) == location_id
+    
+    def is_vehicle_at_location(self, vehicle_type, vehicle_id, location_id):
+        """Check if a specific vehicle is at a specific location"""
+        vehicle_key = (vehicle_type, vehicle_id)
+        return self.state["vehicle_locations"].get(vehicle_key) == location_id
+    
+    def get_package_location(self, pkg_id):
+        """Get the current location of a package (either location_id or vehicle tuple)"""
+        return self.state["package_locations"].get(pkg_id)
+    
+    def get_vehicle_location(self, vehicle_type, vehicle_id):
+        """Get the current location of a vehicle"""
+        vehicle_key = (vehicle_type, vehicle_id)
+        return self.state["vehicle_locations"].get(vehicle_key)
+    
+    def is_package_at_location(self, pkg_id, location_id):
+        """Check if a package is at a specific location (not in a vehicle)"""
+        pkg_location = self.state["package_locations"].get(pkg_id)
+        return pkg_location == location_id
+    
+    def _validate_state_consistency(self):
+        """Validate that all state representations are consistent"""
+        # This method can be called after actions to ensure state integrity
+        for pkg_id in range(self.objects["package"]):
+            pkg_location = self.state["package_locations"][pkg_id]
+            
+            # If package is at a location, it should be in that location's contents
+            if isinstance(pkg_location, int):
+                assert pkg_id in self.state["location_contents"][pkg_location]["packages"], \
+                    f"Package {pkg_id} location inconsistency"
+            
+            # If package is in a vehicle, it should be in that vehicle's contents
+            elif isinstance(pkg_location, tuple):
+                vehicle_key = pkg_location
+                assert pkg_id in self.state["vehicle_contents"][vehicle_key], \
+                    f"Package {pkg_id} vehicle inconsistency"
 
     def load(self, pkg, vehicle_type, vehicle_id, loc):
         """Load a package into a vehicle at a specific location"""
-        vehicle = (vehicle_type, vehicle_id)
+        # Check preconditions using centralized state
         
-        # Check preconditions
-        pkg_location = self.object_locations.get(("package", pkg))
-        vehicle_location = self.object_locations.get(vehicle)
-        
-        # Package must be at the location
-        if pkg_location != loc:
+        # 1. Package must be at the specified location (not in any vehicle)
+        if not self.is_package_at_location(pkg, loc):
             return False
         
-        # Vehicle must be at the same location
-        if vehicle_location != loc:
+        # 2. Vehicle must be at the same location
+        if not self.is_vehicle_at_location(vehicle_type, vehicle_id, loc):
             return False
         
-        # Location must be clear (simplified - always allow for now)
-        if not self.locations[loc]["clear"]:
-            pass  # Allow loading even if location has other objects
+        # 3. Package must not already be in any vehicle
+        for v_type in ["truck", "airplane"]:
+            for v_id in range(self.objects[v_type]):
+                if self.is_package_in_vehicle(pkg, v_type, v_id):
+                    return False
         
-        # Package must not already be in a vehicle
-        if not self.objects_to_propositions["package"][pkg][0]:  # not at location anymore
-            return False
+        # Execute the action - update centralized state
+        vehicle_key = (vehicle_type, vehicle_id)
         
-        # Execute the action
         # Remove package from location
-        self.locations[loc]["objects"].remove(("package", pkg))
+        self.state["location_contents"][loc]["packages"].remove(pkg)
         
         # Add package to vehicle
-        self.vehicle_contents[vehicle].append(pkg)
+        self.state["vehicle_contents"][vehicle_key].append(pkg)
         
-        # Update object propositions
-        self.objects_to_propositions["package"][pkg] = (False, True, True)  # not at location, in vehicle, loaded
+        # Update package location to vehicle
+        self.state["package_locations"][pkg] = vehicle_key
         
-        # Update package location to be "in vehicle" (special marker)
-        self.object_locations[("package", pkg)] = None
+        # Validate state consistency
+        self._validate_state_consistency()
         
         return True
 
     def unload(self, pkg, vehicle_type, vehicle_id, loc):
         """Unload a package from a vehicle at a specific location"""
-        vehicle = (vehicle_type, vehicle_id)
+        # Check preconditions using centralized state
         
-        # Check preconditions
-        vehicle_location = self.object_locations.get(vehicle)
-        
-        # Package must be in the vehicle
-        if pkg not in self.vehicle_contents[vehicle]:
+        # 1. Package must be in the specified vehicle
+        if not self.is_package_in_vehicle(pkg, vehicle_type, vehicle_id):
             return False
         
-        # Vehicle must be at the location
-        if vehicle_location != loc:
+        # 2. Vehicle must be at the specified location
+        if not self.is_vehicle_at_location(vehicle_type, vehicle_id, loc):
             return False
         
-        # Location must be clear (simplified)
-        if not self.locations[loc]["clear"]:
-            pass  # Allow unloading even if location has other objects
+        # Execute the action - update centralized state
+        vehicle_key = (vehicle_type, vehicle_id)
         
-        # Execute the action
         # Remove package from vehicle
-        self.vehicle_contents[vehicle].remove(pkg)
+        self.state["vehicle_contents"][vehicle_key].remove(pkg)
         
         # Add package to location
-        self.locations[loc]["objects"].append(("package", pkg))
-        self.object_locations[("package", pkg)] = loc
+        self.state["location_contents"][loc]["packages"].append(pkg)
         
-        # Update object propositions
-        self.objects_to_propositions["package"][pkg] = (True, False, False)  # at location, not in vehicle, not loaded
+        # Update package location to the location
+        self.state["package_locations"][pkg] = loc
+        
+        # Validate state consistency
+        self._validate_state_consistency()
         
         return True
 
     def drive(self, truck_id, from_loc, to_loc):
         """Move a truck from one location to another"""
-        truck = ("truck", truck_id)
+        # Check preconditions using centralized state
         
-        # Check preconditions
-        truck_location = self.object_locations.get(truck)
-        
-        # Truck must be at the starting location
-        if truck_location != from_loc:
+        # 1. Truck must be at the starting location
+        if not self.is_truck_at_location(truck_id, from_loc):
             return False
         
-        # Destination location must be clear (simplified - always allow)
-        if not self.locations[to_loc]["clear"]:
-            pass  # Allow driving to any location
+        # 2. From and to locations must be different
+        if from_loc == to_loc:
+            return False
         
-        # Execute the action
+        # 3. To location must be valid
+        if to_loc < 0 or to_loc >= self.objects["location"]:
+            return False
+        
+        # Execute the action - update centralized state
+        truck_key = ("truck", truck_id)
+        
         # Remove truck from old location
-        self.locations[from_loc]["objects"].remove(truck)
+        self.state["location_contents"][from_loc]["vehicles"].remove(truck_key)
         
         # Add truck to new location
-        self.locations[to_loc]["objects"].append(truck)
-        self.object_locations[truck] = to_loc
+        self.state["location_contents"][to_loc]["vehicles"].append(truck_key)
+        
+        # Update truck location
+        self.state["vehicle_locations"][truck_key] = to_loc
+        
+        # Validate state consistency
+        self._validate_state_consistency()
         
         return True
 
     def fly(self, plane_id, from_loc, to_loc):
         """Move an airplane from one location to another"""
-        plane = ("airplane", plane_id)
+        # Check preconditions using centralized state
         
-        # Check preconditions
-        plane_location = self.object_locations.get(plane)
-        
-        # Airplane must be at the starting location
-        if plane_location != from_loc:
+        # 1. Airplane must be at the starting location
+        if not self.is_airplane_at_location(plane_id, from_loc):
             return False
         
-        # Destination location must be clear (simplified - always allow)
-        if not self.locations[to_loc]["clear"]:
-            pass  # Allow flying to any location
+        # 2. From and to locations must be different
+        if from_loc == to_loc:
+            return False
         
-        # Execute the action
+        # 3. To location must be valid
+        if to_loc < 0 or to_loc >= self.objects["location"]:
+            return False
+        
+        # Execute the action - update centralized state
+        plane_key = ("airplane", plane_id)
+        
         # Remove airplane from old location
-        self.locations[from_loc]["objects"].remove(plane)
+        self.state["location_contents"][from_loc]["vehicles"].remove(plane_key)
         
         # Add airplane to new location
-        self.locations[to_loc]["objects"].append(plane)
-        self.object_locations[plane] = to_loc
+        self.state["location_contents"][to_loc]["vehicles"].append(plane_key)
+        
+        # Update airplane location
+        self.state["vehicle_locations"][plane_key] = to_loc
+        
+        # Validate state consistency
+        self._validate_state_consistency()
         
         return True
 
     def choose_action(self):
-        """Choose a random valid action"""
+        """Choose a random valid action using centralized state"""
         valid_actions = []
         
-        # Try load actions
+        # Try load actions - package at location + vehicle at same location
         for pkg in range(self.objects["package"]):
-            if self.objects_to_propositions["package"][pkg][0]:  # package at location
-                pkg_loc = self.object_locations[("package", pkg)]
+            pkg_location = self.get_package_location(pkg)
+            
+            # Package must be at a location (not in a vehicle)
+            if isinstance(pkg_location, int):
                 
                 # Try loading into trucks at same location
                 for truck in range(self.objects["truck"]):
-                    truck_loc = self.object_locations[("truck", truck)]
-                    if truck_loc == pkg_loc:
-                        valid_actions.append(("load", ("package", pkg), ("truck", truck), ("location", pkg_loc)))
+                    if self.is_truck_at_location(truck, pkg_location):
+                        valid_actions.append(("load", ("package", pkg), ("truck", truck), ("location", pkg_location)))
                 
                 # Try loading into airplanes at same location
                 for plane in range(self.objects["airplane"]):
-                    plane_loc = self.object_locations[("airplane", plane)]
-                    if plane_loc == pkg_loc:
-                        valid_actions.append(("load", ("package", pkg), ("airplane", plane), ("location", pkg_loc)))
+                    if self.is_airplane_at_location(plane, pkg_location):
+                        valid_actions.append(("load", ("package", pkg), ("airplane", plane), ("location", pkg_location)))
         
-        # Try unload actions
+        # Try unload actions - package in vehicle + vehicle at location
         for truck in range(self.objects["truck"]):
-            truck_vehicle = ("truck", truck)
-            truck_loc = self.object_locations[truck_vehicle]
-            for pkg in self.vehicle_contents[truck_vehicle]:
+            truck_loc = self.get_vehicle_location("truck", truck)
+            truck_key = ("truck", truck)
+            for pkg in self.state["vehicle_contents"][truck_key]:
                 valid_actions.append(("unload", ("package", pkg), ("truck", truck), ("location", truck_loc)))
         
         for plane in range(self.objects["airplane"]):
-            plane_vehicle = ("airplane", plane)
-            plane_loc = self.object_locations[plane_vehicle]
-            for pkg in self.vehicle_contents[plane_vehicle]:
+            plane_loc = self.get_vehicle_location("airplane", plane)
+            plane_key = ("airplane", plane)
+            for pkg in self.state["vehicle_contents"][plane_key]:
                 valid_actions.append(("unload", ("package", pkg), ("airplane", plane), ("location", plane_loc)))
         
-        # Try drive actions
+        # Try drive actions - move trucks between locations
         for truck in range(self.objects["truck"]):
-            truck_loc = self.object_locations[("truck", truck)]
+            truck_loc = self.get_vehicle_location("truck", truck)
             for to_loc in range(self.objects["location"]):
                 if to_loc != truck_loc:
                     valid_actions.append(("drive", ("truck", truck), ("location", truck_loc), ("location", to_loc)))
         
-        # Try fly actions
+        # Try fly actions - move airplanes between locations
         for plane in range(self.objects["airplane"]):
-            plane_loc = self.object_locations[("airplane", plane)]
+            plane_loc = self.get_vehicle_location("airplane", plane)
             for to_loc in range(self.objects["location"]):
                 if to_loc != plane_loc:
                     valid_actions.append(("fly", ("airplane", plane), ("location", plane_loc), ("location", to_loc)))
@@ -267,7 +319,7 @@ class LogisticsDomain:
             return rd.choice(valid_actions)
         else:
             # Fallback - just drive a truck somewhere
-            truck_loc = self.object_locations[("truck", 0)]
+            truck_loc = self.get_vehicle_location("truck", 0)
             to_loc = (truck_loc + 1) % self.objects["location"]
             return ("drive", ("truck", 0), ("location", truck_loc), ("location", to_loc))
 
@@ -336,8 +388,8 @@ class LogisticsDomain:
     def create_token_map(self):
         token_map = {}
         idx = 0
-        # Reserve first 4 indices for actions
-        current_idx = 4
+        # Reserve first 10 indices for actions
+        current_idx = 10
         breaks = False
         for type_name in self.types:
             for pred in self.predicates_arity[type_name]:
@@ -361,17 +413,104 @@ class LogisticsDomain:
             self.token_map = token_map
 
     def get_predicate_Tokens(self, type, obj, instance):
-        preds = self.predicates_arity[type].keys()
-        props = self.objects_to_propositions[type][obj]
+        """
+        Generate predicate tokens by checking actual world state.
+        The truth value of each predicate is determined by the specific states of the objects involved.
+        For example: at_truck(block, truck) is true if block is currently in the specified truck.
+        """
+        preds = list(self.predicates_arity[type].keys())
         tokens = []
-        for i, pred in enumerate(preds):
+        
+        for pred in preds:
             token = np.zeros(self.token_size)
             indx = self.token_map[pred]
-            token[indx] = 1
-            if props[i]:
+            token[indx] = 1  # Mark predicate as active
+            
+            # Check actual world state for each predicate using centralized state
+            predicate_value = False
+            
+            if pred == "at":
+                if type == "package":
+                    # Package "at" predicate: true if package is at a location (not in any vehicle)
+                    pkg_location = self.get_package_location(obj)
+                    predicate_value = isinstance(pkg_location, int)  # at location, not in vehicle
+                    
+                elif type == "truck":
+                    # Truck "at" predicate: true if truck is at any location (always true since trucks are always somewhere)
+                    truck_location = self.get_vehicle_location("truck", obj)
+                    predicate_value = truck_location is not None
+                    
+                elif type == "airplane":
+                    # Airplane "at" predicate: true if airplane is at any location (always true since airplanes are always somewhere)
+                    plane_location = self.get_vehicle_location("airplane", obj)
+                    predicate_value = plane_location is not None
+                    
+            elif pred == "in":
+                if type == "package":
+                    # Package "in" predicate: true if package is in any vehicle
+                    pkg_location = self.get_package_location(obj)
+                    predicate_value = isinstance(pkg_location, tuple)  # in vehicle (location is vehicle tuple)
+                    
+            elif pred == "loaded":
+                if type == "package":
+                    # Package "loaded" predicate: true if package is loaded in any vehicle (same as "in")
+                    pkg_location = self.get_package_location(obj)
+                    predicate_value = isinstance(pkg_location, tuple)  # loaded in vehicle
+                    
+            elif pred == "clear":
+                if type == "location":
+                    # Location "clear" predicate: true if location has no packages (vehicles can still be there)
+                    # A location is clear if it has no packages at it
+                    location_packages = self.state["location_contents"][obj]["packages"]
+                    predicate_value = len(location_packages) == 0
+            
+            # Handle specific predicates that may be created for token differentiation
+            elif pred.startswith("at_"):
+                # Handle renamed predicates like "at_truck", "at_airplane", etc.
+                base_pred = pred.split("_")[0]  # Extract "at" from "at_truck"
+                
+                if base_pred == "at":
+                    if type == "package":
+                        pkg_location = self.get_package_location(obj)
+                        predicate_value = isinstance(pkg_location, int)
+                    elif type == "truck":
+                        truck_location = self.get_vehicle_location("truck", obj)
+                        predicate_value = truck_location is not None
+                    elif type == "airplane":
+                        plane_location = self.get_vehicle_location("airplane", obj)
+                        predicate_value = plane_location is not None
+                        
+            elif pred.startswith("in_"):
+                # Handle renamed predicates like "in_package", etc.
+                base_pred = pred.split("_")[0]  # Extract "in" from "in_package"
+                
+                if base_pred == "in" and type == "package":
+                    pkg_location = self.get_package_location(obj)
+                    predicate_value = isinstance(pkg_location, tuple)
+                    
+            elif pred.startswith("loaded_"):
+                # Handle renamed predicates like "loaded_package", etc.
+                base_pred = pred.split("_")[0]  # Extract "loaded" from "loaded_package"
+                
+                if base_pred == "loaded" and type == "package":
+                    pkg_location = self.get_package_location(obj)
+                    predicate_value = isinstance(pkg_location, tuple)
+                    
+            elif pred.startswith("clear_"):
+                # Handle renamed predicates like "clear_location", etc.
+                base_pred = pred.split("_")[0]  # Extract "clear" from "clear_location"
+                
+                if base_pred == "clear" and type == "location":
+                    location_packages = self.state["location_contents"][obj]["packages"]
+                    predicate_value = len(location_packages) == 0
+            
+            # Set the predicate value in the token
+            if predicate_value:
                 token[indx + 1] = 1
-            token[indx + 2] = instance
+            
+            token[indx + 2] = instance  # Set instance number
             tokens.append(token)
+        
         return tokens
 
     def get_global_tokens(self):
