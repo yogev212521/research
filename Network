@@ -1,0 +1,8 @@
+from pddlsim_runner import Domain_sim
+import asyncio
+
+logistics = Domain_sim()
+
+trace = asyncio.run(logistics.Generate_trace(20))
+i = 1
+

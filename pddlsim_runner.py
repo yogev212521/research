@@ -6,6 +6,7 @@ Uses your logistics_domain.pddl and logistics_problem.pddl
 
 import asyncio
 import random
+import itertools
 import numpy as np
 from collections.abc import Sequence
 from pddlsim.parser import (
@@ -34,7 +35,7 @@ from pddlsim.ast import (
 
 class Domain_sim:
 
-    def __init__(self, DOMAIN_FILE=None,PROBLEM_FILE=None, token_len=None, action_space = 20, pred_offset=0, action_offset=0, token_size=50):
+    def __init__(self, DOMAIN_FILE=None,PROBLEM_FILE=None, action_space = 20, pred_offset=0, action_offset=0, token_size=50):
         self.DOMAIN_FILE = DOMAIN_FILE or "./pddlDomains/logistics_domain.pddl"
         self.PROBLEM_FILE = PROBLEM_FILE or "./pddlDomains/logistics_problem.pddl"
         # Parse domain and problem
@@ -49,12 +50,12 @@ class Domain_sim:
         pred = list(self.domain.predicates_section._items.keys())[0]
         pred2 = self.domain.predicates_section._items[pred]
         params = pred2.parameters
-        self.token_len = token_len
         self.traces = []
         self.last_action = None
         self.pred_offset = pred_offset
         self.action_offset = action_offset
         self.token_size = token_size
+        self.num_of_tokens = 60
         self.create_token_map()
 
     def create_token_map(self):
@@ -64,7 +65,7 @@ class Domain_sim:
             token_map[pred] = i*3 + self.pred_offset + self.action_space
         self.token_map = token_map
 
-
+    
     @staticmethod
     def pick_grounded_action( actions: Sequence[GroundedAction]) -> GroundedAction:
         return random.choice(actions)
@@ -72,9 +73,9 @@ class Domain_sim:
 
     async def get_next_action(self, simulation: SimulationClient) -> SimulationAction:
         states = await simulation.get_perceived_state()
-
+        
         if self.last_action:
-            self.traces.append(self.last_action)
+            self.traces.append(self.get_tokens(action=self.last_action, states=states))
         # Log a small preview of options
         options = await simulation.get_grounded_actions()
         if options:
@@ -94,6 +95,8 @@ class Domain_sim:
             case _:
                 chosen = Domain_sim.pick_grounded_action(options)
         print(f"Chosen action: {chosen}")
+        self.traces.append(self.get_tokens(action=chosen,states=states))
+        self.last_action = chosen
         return chosen
 
     @staticmethod
@@ -109,7 +112,7 @@ class Domain_sim:
         return limited
 
     async def Generate_trace(self, trace_size):
-
+        self.traces = []
         # Create a local simulator from the config
         local_simulator = await LocalSimulator.from_configuration(
             SimulatorConfiguration(self.domain, self.problem)
@@ -117,11 +120,10 @@ class Domain_sim:
 
         print("Starting local simulation with random agent...")
         summary = await local_simulator.simulate(with_no_initializer(Domain_sim.make_step_limited_policy(self.get_next_action, max_steps=trace_size)))
-        self.traces = []
-
+        return self.traces
 
     def get_tokens(self, states: SimulationState, action: SimulationAction):
-        tokens =[] # [self.get_actionTokens(action)]
+        tokens = [self.create_action_token(action)]
         tokens.extend(self.get_obj_predicates_Tokens(simulation_states=states, objs=action.grounding))
 
         # fill all other tokens to the fixed size
@@ -129,10 +131,12 @@ class Domain_sim:
             tokens.append(np.zeros(self.token_size))
         return tokens
     
-    def get_actionTokens(self, action, from_index = 0, added_size=0):
-        indx = list(self.action_map.keys()).index(action[0])
-        token = np.zeros(self.token_size +added_size)
-        token[indx + from_index] = 1  # action token
+    def create_action_token(self, action: SimulationAction):
+        actions = list(map(lambda a: a.value, list(self.domain.actions_section._items.keys())))
+        idx = actions.index(action.name.value)        
+
+        token = np.zeros(self.token_size)
+        token[idx + self.action_offset] = 1
         return token
     
     def get_obj_predicates_Tokens(self, objs, simulation_states: SimulationState):
@@ -141,7 +145,7 @@ class Domain_sim:
         types = self.get_all_object_types(objs)
         preds = self.get_types_predicates(types)
         inst_counter = {}
-        existing_props= []
+        existing_props= {}
         for pred in preds:
             token = np.zeros(self.token_size)
             pred_name = pred.name
@@ -150,41 +154,43 @@ class Domain_sim:
             else:
                 inst_counter[pred_name] = 1
             prop = self.pred_to_prop(pred, types, existing_props)
+            if not prop:
+                continue
             indx = self.token_map[pred_name]
             token[indx] = 1
-            truth = len(list(filter(lambda state: prop[0] == state[0] and prop[1]==state[1],states_props))) > 0
+            truth = len(list(filter(lambda state: prop[0].name == state.name and prop[1]==state.assignment, states_props))) > 0
+            if truth:
+                i = 1
             token[indx + 1] = 1 if truth else 0
             token[indx + 2] = inst_counter[pred_name]
             tokens.append(token)
         return tokens
     
-    def pred_to_prop(self, pred: PredicateDefinition, obj_types, existing_props):
+    def pred_to_prop(self, pred: PredicateDefinition, obj_types: dict, existing_props: dict):
         params = pred.parameters
-        name = pred.name
+        pred_name = pred.name
+        if pred_name not in existing_props:
+            existing_props[pred_name] =[]
         asignment = {}
-        for name, type  in params.
-            if name not in asignment:
-                for obj, types in obj_types and obj not in asignment.values():
-                    if type in types:
-                        asignment[name] = obj
-                    continue
-        asignments = tuple(asignment.values())
-        if asignments not in existing_props[pred]:
-            existing_props[pred].append(asignments)
-            return (pred, asignments)
-        else:
-            raise 
+        param_candidates = []
+        for name, type in params._items.items():
+            candidates = [obj for obj, types in obj_types.items() if type in types]
+            if not candidates:
+                return None  # No object of required type
+            param_candidates.append(candidates)
+        # Try all permutations
+        for assignment in itertools.product(*param_candidates):
+            if len(set(assignment)) < len(assignment):
+                continue  # Skip assignments with duplicate objects
+            if assignment not in existing_props[pred_name]:
+                existing_props[pred_name].append(assignment)
+                return (pred, assignment)
+        return None
         
-
-    def get_actionTokens(self, action):
-        indx = list(self.domain.actions_section._items.keys()).index(action[0])
-        token = np.zeros(self.token_size)
-        token[indx + self.action_offset] = 1  
-        return token
 
     def get_all_object_types(self, objs):
         collection = {}
-        types_map = self.problem.objects_section._items
+        type_to_type =self.domain.types_section._items
         for obj in objs:
             collection[obj] = []
             obj_type = self.problem.objects_section._items[obj]
@@ -192,22 +198,22 @@ class Domain_sim:
             while queue:
                 current = queue.pop(0)
                 collection[obj].append(current)
-                if current in types_map:
-                    queue.append(types_map[current])
+                if current in type_to_type:
+                    queue.append(type_to_type[current])
         return collection
      
     def get_types_predicates(self, objs_types_map: dict) -> list[PredicateDefinition]:
         preds = []
         for _,obj_types in objs_types_map.items():
             for _type in obj_types:
-                for pred, param in self.domain.predicates_section._items.items():
+                for param in self.domain.predicates_section._items.values():
                     if _type in param.parameters._items.values():
-                        preds.append(PredicateDefinition(pred,param))
+                        preds.append(param)
         return preds
 
 
 if __name__ == "__main__":
-    domain = Domain_sim(token_len=3)
+    domain = Domain_sim()
     asyncio.run(domain.Generate_trace(trace_size=10))
 
 #     (at ?obj - object ?loc - location)

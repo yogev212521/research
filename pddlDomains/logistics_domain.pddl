@@ -2,7 +2,7 @@
   (:requirements :strips :typing :negative-preconditions :equality)
   
   (:types
-    location - location
+    location - loc
     vehicle - object
     package - object
     truck airplane - vehicle
