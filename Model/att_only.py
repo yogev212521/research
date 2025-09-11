@@ -7,8 +7,9 @@ class Att_PAM(nn.Module):
 
     def __init__(self, output_dim, embed_dim,input_dim, head_number):
         super(Att_PAM, self).__init__()
-        self.embedding_in1 = nn.Linear(input_dim, embed_dim)
         self.embed_dim = embed_dim
+        self.embedding_in1 = nn.Linear(input_dim, int(embed_dim/2))
+        self.embedding_in2 = nn.Linear(int(embed_dim/2), embed_dim)
 
         self.att1 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
         self.att2 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
@@ -31,6 +32,7 @@ class Att_PAM(nn.Module):
 
     def forward(self,x):
         x = self.embedding_in1(x)
+        x = self.embedding_in2(x)
         x1, _ = self.att1(x, x, x)
         x = nn.Dropout(0.1)(x)
         x = self.norm1(x1 + x)
@@ -59,6 +61,13 @@ class Att_PAM(nn.Module):
         f3 = self.ff3(x)
         f3 = nn.GELU()(f3)
         x = nn.LayerNorm(self.embed_dim)(f3 + x)
+
+        x4, _ = self.att4(x, x, x)
+        x = nn.Dropout(0.1)(x)
+        x = self.norm4(x4 + x)
+        f4 = self.ff4(x)
+        f4 = nn.GELU()(f3)
+        x = nn.LayerNorm(self.embed_dim)(f4 + x)
 
         x = self.embedding_out1(x)
         x = nn.GELU()(x)

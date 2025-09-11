@@ -73,7 +73,7 @@ class Domain_sim:
 
     async def get_next_action(self, simulation: SimulationClient) -> SimulationAction:
         states = await simulation.get_perceived_state()
-        
+        action_prob = [1, 0.4, 0.7, 0.2]
         if self.last_action:
             self.traces.append(self.get_tokens(action=self.last_action, states=states))
         # Log a small preview of options
@@ -84,7 +84,7 @@ class Domain_sim:
 
             # Print the first few options for visibility
             preview = ", ".join(str(a) for a in options[:3])
-            print(f"Applicable actions ({len(options)}): {preview}{' ...' if len(options) > 3 else ''}")
+            # print(f"Applicable actions ({len(options)}): {preview}{' ...' if len(options) > 3 else ''}")
         else:
             print("No applicable actions, giving up.")
         match len(options):
@@ -94,8 +94,9 @@ class Domain_sim:
                 chosen = options[0]
             case _:
                 chosen = Domain_sim.pick_grounded_action(options)
-        print(f"Chosen action: {chosen}")
+        # print(f"Chosen action: {chosen}")
         self.traces.append(self.get_tokens(action=chosen,states=states))
+
         self.last_action = chosen
         return chosen
 
@@ -111,15 +112,18 @@ class Domain_sim:
             return await base_policy(sim)
         return limited
 
-    async def Generate_trace(self, trace_size):
+    def 
+    async def Generate_trace(self, trace_size, prob = False):
         self.traces = []
         # Create a local simulator from the config
         local_simulator = await LocalSimulator.from_configuration(
             SimulatorConfiguration(self.domain, self.problem)
         )
-
-        print("Starting local simulation with random agent...")
+        self.prob = prob
+        # print("Starting local simulation with random agent...")
         summary = await local_simulator.simulate(with_no_initializer(Domain_sim.make_step_limited_policy(self.get_next_action, max_steps=trace_size)))
+        self.last_action = None
+        self.prob = False
         return self.traces
 
     def get_tokens(self, states: SimulationState, action: SimulationAction):
