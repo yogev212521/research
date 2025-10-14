@@ -7,8 +7,10 @@ class Att_PAM(nn.Module):
 
     def __init__(self, output_dim, embed_dim,input_dim, head_number):
         super(Att_PAM, self).__init__()
+        torch.manual_seed(1)
         self.embed_dim = embed_dim
         self.embedding_in1 = nn.Linear(input_dim, int(embed_dim/2))
+        nn.init.xavier_uniform_(self.embedding_in1.weight)
         self.embedding_in2 = nn.Linear(int(embed_dim/2), embed_dim)
 
         self.att1 = nn.MultiheadAttention(embed_dim, num_heads=head_number, dropout=0.1 , batch_first=True)
@@ -25,13 +27,14 @@ class Att_PAM(nn.Module):
         self.ff2 = nn.Linear(embed_dim, embed_dim)
         self.ff3 = nn.Linear(embed_dim, embed_dim)
         self.ff4 = nn.Linear(embed_dim, embed_dim)
-
         self.embedding_out1 = nn.Linear(embed_dim, int(embed_dim/2))
         self.embedding_out2 = nn.Linear(int(embed_dim/2), output_dim)
+        nn.init.constant_(self.embedding_out1.bias, 0.1)
+        nn.init.constant_(self.embedding_out2.bias, 0.1)
 
 
     def forward(self,x):
-        x = self.embedding_in1(x)
+        x =  self.embedding_in1(x)
         x = self.embedding_in2(x)
         x1, _ = self.att1(x, x, x)
         x = nn.Dropout(0.1)(x)
@@ -75,30 +78,59 @@ class Att_PAM(nn.Module):
         x = nn.GELU()(x)
         return x
     
-    def train(self, All_traces , lr=0.00001, iterations = 10):
+    def train(self, All_traces , lr=0.0000001, iterations = 10, delta = None):
         criterion = nn.MSELoss()
-    
         optimizer = optim.Adam(self.parameters(), lr)
-        for j in range(iterations):
-            for epoch, traces in enumerate(All_traces):
-                tr_traces = np.transpose(traces, (1, 0, 2, 3))
-                running_loss = 0.0
-                for i, next_state in enumerate(tr_traces):
-                    if i%2 == 0:
-                        inital_state = torch.from_numpy(next_state).float()
-                        continue
-                    next_state = torch.from_numpy(next_state).float()
-                    optimizer.zero_grad()
-                    outputs = self(inital_state)
-                    loss = criterion(outputs, next_state)
-                    loss.backward()
-                    optimizer.step()
-                    running_loss += loss.item()
-                    
-                print(f"Epoch {epoch + 1}, Loss: {running_loss / len(All_traces)}")
-            print(f"finished {j+1}/{iterations}.")
-        print("Training complete.")
+        if not delta:
+            for j in range(iterations):
+                for epoch, traces in enumerate(All_traces):
+                    tr_traces = np.transpose(traces, (1, 0, 2, 3))
+                    running_loss = 0.0
+                    for i, next_state in enumerate(tr_traces):
+                        if i%2 == 0:
+                            inital_state = torch.from_numpy(next_state).float()
+                            continue
+                        next_state = torch.from_numpy(next_state).float()
+                        optimizer.zero_grad()
+                        outputs = self(inital_state)
+                        loss = criterion(outputs, next_state)
+                        loss.backward()
+                        optimizer.step()
+                        running_loss += loss.item()
+                        torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=2.0)
 
+                    print(f"Epoch {epoch + 1}, Loss: {running_loss / len(All_traces)}")
+                print(f"finished {j+1}/{iterations}.")
+            print("Training complete.")
+        else:
+            old_loss = 20
+            j = 0
+            current_delta = 1
+            while current_delta > delta:
+                j +=1
+                for epoch, traces in enumerate(All_traces):
+                    tr_traces = np.transpose(traces, (1, 0, 2, 3))
+                    running_loss = 0.0
+                    for i, next_state in enumerate(tr_traces):
+                        if i%2 == 0:
+                            inital_state = torch.from_numpy(next_state).float()
+                            continue
+                        next_state = torch.from_numpy(next_state).float()
+                        optimizer.zero_grad()
+                        outputs = self(inital_state)
+                        loss = criterion(outputs, next_state)
+                        loss.backward()
+                        optimizer.step()
+                        running_loss += loss.item()
+                        torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=2.0)
+                    
+                    current_delta = abs(old_loss - running_loss)
+                    old_loss = running_loss
+                    if j >20:
+                        break
+                    print(f"Epoch {epoch + 1}, Loss: {running_loss / len(All_traces)}")
+                print(f"finished {j+1} iterations. current_delta: {current_delta} > {delta}")
+    
     def test(self, trace):
         with torch.no_grad():
             trace = torch.from_numpy(np.array([trace])).float()

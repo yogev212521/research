@@ -1,0 +1,46 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    "version": "0.2.0",
+    "configurations": [
+    
+    
+        
+
+
+
+
+
+        
+
+        
+
+
+        
+
+        {
+            "name": "Python: Network.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/Network.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: pddlsim_runner.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/pddlsim_runner.py",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: pddlsim (module)",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pddlsim",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        }
+    ]
+}

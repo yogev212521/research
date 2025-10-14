@@ -1,0 +1,13 @@
+(define (domain rooms)
+        (:requirements :typing :equality :disjunctive-preconditions :negative-preconditions :probabilistic-effects)
+        (:types person room)
+        (:predicates (at ?p - person ?r - room)
+                     (connected ?a ?b - room))
+        (:action move
+        :parameters (?p - person ?from ?to - room)
+        :precondition (and (at ?p ?from)
+                           (not (= ?from ?to))
+                           (or (connected ?from ?to)
+                               (connected ?to ?from)))
+        :effect (and (at ?p ?to)
+                     (not (at ?p ?from)))))

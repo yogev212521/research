@@ -16,6 +16,7 @@ from pddlsim.parser import (
 )
 from pddlsim.local import LocalSimulator
 from pddlsim.remote.server import SimulatorConfiguration
+from IndexManager import IndexManager
 from pddlsim.remote.client import (
     GiveUpAction,
     SimulationAction,
@@ -35,7 +36,7 @@ from pddlsim.ast import (
 
 class Domain_sim:
 
-    def __init__(self, DOMAIN_FILE=None,PROBLEM_FILE=None, action_space = 20, pred_offset=0, action_offset=0, token_size=50):
+    def __init__(self, indexManager: IndexManager, DOMAIN_FILE : str =None,PROBLEM_FILE=None, action_space = 20, pred_offset=0, action_offset=0, token_size=70):
         self.DOMAIN_FILE = DOMAIN_FILE or "./pddlDomains/logistics_domain.pddl"
         self.PROBLEM_FILE = PROBLEM_FILE or "./pddlDomains/logistics_problem.pddl"
         # Parse domain and problem
@@ -47,24 +48,29 @@ class Domain_sim:
             self.domain = parse_domain_from_file(self.DOMAIN_FILE)
             self.problem = parse_problem_from_file(self.PROBLEM_FILE, Domain_sim)
         self.action_space = action_space
-        pred = list(self.domain.predicates_section._items.keys())[0]
-        pred2 = self.domain.predicates_section._items[pred]
-        params = pred2.parameters
+        self.indexMan = indexManager
         self.traces = []
+        self.pred_size = len(self.domain.predicates_section._items.keys())*3
         self.last_action = None
         self.pred_offset = pred_offset
         self.action_offset = action_offset
         self.token_size = token_size
         self.num_of_tokens = 60
         self.create_token_map()
+        name = DOMAIN_FILE.split('/')[-1]
+        self.name = name.split('_')[0]
+        self.prob = dict()
 
     def create_token_map(self):
         token_map = {}
         preds = self.domain.predicates_section._items
-        for i, pred in enumerate(preds.keys()):
-            token_map[pred] = i*3 + self.pred_offset + self.action_space
-        self.token_map = token_map
 
+        for i, pred in enumerate(preds.values()):
+            token_map[pred.name.value] = i*3 + self.pred_offset + self.action_space
+            self.indexMan.add_pred_to_map(pred)
+            if pred.name.value == 'test':
+                self.prob[i*3 + self.pred_offset + self.action_space] = 0.5
+        self.token_map = token_map
     
     @staticmethod
     def pick_grounded_action( actions: Sequence[GroundedAction]) -> GroundedAction:
@@ -112,7 +118,6 @@ class Domain_sim:
             return await base_policy(sim)
         return limited
 
-    def 
     async def Generate_trace(self, trace_size, prob = False):
         self.traces = []
         # Create a local simulator from the config
@@ -160,7 +165,10 @@ class Domain_sim:
             prop = self.pred_to_prop(pred, types, existing_props)
             if not prop:
                 continue
-            indx = self.token_map[pred_name]
+            indx = self.token_map[pred_name.value]
+            new_index = self.indexMan.get_pred_index(pred)
+            if new_index != indx:
+                raise Exception
             token[indx] = 1
             truth = len(list(filter(lambda state: prop[0].name == state.name and prop[1]==state.assignment, states_props))) > 0
             if truth:
@@ -177,7 +185,7 @@ class Domain_sim:
             existing_props[pred_name] =[]
         asignment = {}
         param_candidates = []
-        for name, type in params._items.items():
+        for _, type in params._items.items():
             candidates = [obj for obj, types in obj_types.items() if type in types]
             if not candidates:
                 return None  # No object of required type
@@ -211,7 +219,7 @@ class Domain_sim:
         for _,obj_types in objs_types_map.items():
             for _type in obj_types:
                 for param in self.domain.predicates_section._items.values():
-                    if _type in param.parameters._items.values():
+                    if _type in param.parameters._items.values() or not param.parameters._items and param not in preds:
                         preds.append(param)
         return preds
 
