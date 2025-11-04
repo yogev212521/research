@@ -14,6 +14,8 @@
     (at ball1 room1)
     (at ball2 room1)
     ;; All grippers are initially free
+    (clear ball1)
+    (clear ball2)
     (free G1)
     (free G2)
     (global)

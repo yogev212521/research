@@ -10,6 +10,7 @@
     (at ?b - ball ?r - room)
     (free ?g - gripper)
     (carry ?b - ball ?g - gripper)
+    (global)
   )
 
   (:action move
@@ -28,11 +29,13 @@
       (at ?b ?r)
       (free ?g)
       (not (carry ?b ?g))
+      (global)
     )
     :effect (and
       (carry ?b ?g)
       (not (at ?b ?r))
       (not (free ?g))
+      (not (global))
     )
   )
 
@@ -41,11 +44,13 @@
     :precondition (and
       (at-robby ?r)
       (carry ?b ?g)
+      (not (global))
     )
     :effect (and
       (at ?b ?r)
       (free ?g)
       (not (carry ?b ?g))
+      (global)
     )
   )
 )

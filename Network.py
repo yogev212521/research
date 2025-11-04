@@ -121,13 +121,14 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
     default_iter = 10
     iterations = iterations if iterations is not None else default_iter
     # Prepare metric history per domain
-    metric_history = {domain.name: {'identifier': [], 'truth': [], 'instance': [], 'mse': []} for domain in domains}
-    for m in range(1,15):
+    metric_history = {domain.name: {'identifier': [], 'truth': [], 'instance': [], 'MSE': []} for domain in domains}
+    for m in range(1,8):
+        print(f"\nstarting itertaion {m}\n")
         traces = []
         batch_size = devider(m)
         trace = None
         for domain in domains:
-            for _ in tqdm(range(m*2)):
+            for _ in range(m*2):
                 while not trace or np.shape(trace)[0] != 19:
                     trace = asyncio.run(domain.Generate_trace(10))
                 traces.append(trace)
@@ -135,7 +136,7 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
         np.random.shuffle(traces)
         traces = traces.reshape(traces.shape[0] // batch_size, batch_size, *traces.shape[1:])
         model = att_only.Att_PAM(output_dim=domains[0].token_size, embed_dim=512, input_dim=domains[0].token_size, head_number=8)
-        model.train(traces, lr=0.00001, iterations=iterations, delta= 0.0001)
+        model.train(traces, lr=0.00001, iterations=iterations, delta= 0.0001/m)
 
         summary = []
         for domain in domains:
@@ -165,7 +166,7 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
             metric_history[domain.name]['identifier'].append(identifier/N if N else 0)
             metric_history[domain.name]['truth'].append(truth/N if N else 0)
             metric_history[domain.name]['instance'].append(instance/N if N else 0)
-            metric_history[domain.name]['mse'].append(mse/N if N else 0)
+            metric_history[domain.name]['MSE'].append(mse/N if N else 0)
             summary.append((domain.name ,identifier/N,truth/N, instance/N, mse/N))
 
     with open(output_file, "w") as f:
@@ -173,8 +174,8 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
         f.write(f"- Number of traces used for training: {len(traces)}\n")
         f.write(f"- Length of each trace: 20\n")
         f.write(f"- Number of training iterations: {iterations}\n\n")
-        for domain_name, identifier, truth, instance , mse in summary:
-            f.write(f"Domain: {domain_name}, distences - identifier: {identifier}, truth: {truth}, instance: {instance}, mse\n")
+        for domain_name, identifier, truth, instance , MSE in summary:
+            f.write(f"Domain: {domain_name}, distences - identifier: {identifier}, truth: {truth}, instance: {instance}\n")
 
     import os
     # Plot mse and other metrics as separate subplots in the same figure for each domain
@@ -194,13 +195,13 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
         from matplotlib.ticker import MaxNLocator
         ax1.yaxis.set_major_locator(MaxNLocator(nbins=15))
 
-        ax2.plot(m_range, metrics['mse'], marker='o', color='red', label='mse')
-        ax2.set_xlabel("number of states")
-        ax2.set_ylabel("loss - MSE")
-        ax2.legend(loc='upper left')
-        ax2.set_title(f"{domain_name} - MSE")
-        ax2.grid(True)
-        ax2.yaxis.set_major_locator(MaxNLocator(nbins=15))
+        # ax2.plot(m_range, metrics['mse'], marker='o', color='red', label='mse')
+        # ax2.set_xlabel("number of states")
+        # ax2.set_ylabel("loss - MSE")
+        # ax2.legend(loc='upper left')
+        # ax2.set_title(f"{domain_name} - MSE")
+        # ax2.grid(True)
+        # ax2.yaxis.set_major_locator(MaxNLocator(nbins=15))
 
         plt.tight_layout()
         plt.savefig(os.path.join("graphs", f"solo_{domain_name}_metrics_subplots.png"))
@@ -237,6 +238,7 @@ if True:
 else:
     model = att_only.Att_PAM(output_dim=logistics.token_size, embed_dim=512, input_dim=logistics.token_size, head_number=8)
     model.load_state_dict(torch.load("./Parameters/pddl_4_domains_trained.pth"))
+
 # test_attention_model(domain=blocksworld, model=model, prob=False)
 
 # test_attention_model(domain=logistics, model=model, prob=False)

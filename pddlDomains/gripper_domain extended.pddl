@@ -11,12 +11,14 @@
     (free ?g - gripper)
     (carry ?b - block ?g - gripper)
     (on ?block ?block)
+    (clear ?block)
+    (global)
   )
 
   (:action stack
     :parameters (?x - block ?y - block)
     :precondition (and (holding ?x) (clear ?y))
-    :effect (and (not (holding ?x)) (not (clear ?y)) (handempty) (on ?x ?y) (clear ?x)(probabilistic 0.5 (tests)))
+    :effect (and (not (holding ?x)) (not (clear ?y))(on ?x ?y) (clear ?x))
   )
 
   (:action move
@@ -35,11 +37,13 @@
       (at ?b ?r)
       (free ?g)
       (not (carry ?b ?g))
+      (global)
     )
     :effect (and
       (carry ?b ?g)
       (not (at ?b ?r))
       (not (free ?g))
+      (not (global))
     )
   )
 
@@ -48,11 +52,13 @@
     :precondition (and
       (at-robby ?r)
       (carry ?b ?g)
+      (not (global))
     )
     :effect (and
       (at ?b ?r)
       (free ?g)
       (not (carry ?b ?g))
+      (global)
     )
   )
 )

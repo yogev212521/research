@@ -1,6 +1,6 @@
 Training summary:
-- Number of traces used for training: 4
+- Number of traces used for training: 7
 - Length of each trace: 20
 - Number of training iterations: 10
 
-Domain: logistics, distences - identifier: 0.04315262961972621, truth: 0.07036239561330149, instance: 0.07132894223156784, mse
+Domain: logistics, distences - identifier: 0.04007001281622381, truth: 0.05559889189674193, instance: 0.06348953243840631
