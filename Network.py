@@ -122,15 +122,18 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
     iterations = iterations if iterations is not None else default_iter
     # Prepare metric history per domain
     metric_history = {domain.name: {'identifier': [], 'truth': [], 'instance': [], 'MSE': []} for domain in domains}
-    for m in range(1,8):
+    summary = []
+
+    for m in range(1,10):
         print(f"\nstarting itertaion {m}\n")
         traces = []
-        batch_size = devider(m)
+        batch_size = 10
         trace = None
+        trace_size = 10
         for domain in domains:
-            for _ in range(m*2):
-                while not trace or np.shape(trace)[0] != 19:
-                    trace = asyncio.run(domain.Generate_trace(10))
+            for _ in range(m):
+                while not trace or np.shape(trace)[0] != trace_size-1:
+                    trace = asyncio.run(domain.Generate_trace(trace_size))
                 traces.append(trace)
         traces = np.array(traces)
         np.random.shuffle(traces)
@@ -138,7 +141,6 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
         model = att_only.Att_PAM(output_dim=domains[0].token_size, embed_dim=512, input_dim=domains[0].token_size, head_number=8)
         model.train(traces, lr=0.00001, iterations=iterations, delta= 0.0001/m)
 
-        summary = []
         for domain in domains:
             if asyncio.iscoroutinefunction(domain.Generate_trace):
                 test_trace = asyncio.run(domain.Generate_trace(trace_length))
@@ -146,8 +148,8 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
                 test_trace = domain.Generate_trace(trace_length)
             N = 0
             identifier, truth, instance, mse = 0,0,0,0
-            for step in range(0, min(len(test_trace) - 1, trace_length * 2), 2):
-                current_state = test_trace[step]
+            for step in range(0, min(len(test_trace) - 1, trace_length * 2), 2): # type: ignore
+                current_state = test_trace[step] # type: ignore
                 expected_next_state = test_trace[step + 1]
                 prediction = model.test(trace=np.array(current_state))[0]
                 # Compute mean absolute error for each output index
@@ -169,13 +171,41 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
             metric_history[domain.name]['MSE'].append(mse/N if N else 0)
             summary.append((domain.name ,identifier/N,truth/N, instance/N, mse/N))
 
-    with open(output_file, "w") as f:
-        f.write(f"Training summary:\n")
-        f.write(f"- Number of traces used for training: {len(traces)}\n")
-        f.write(f"- Length of each trace: 20\n")
-        f.write(f"- Number of training iterations: {iterations}\n\n")
-        for domain_name, identifier, truth, instance , MSE in summary:
-            f.write(f"Domain: {domain_name}, distences - identifier: {identifier}, truth: {truth}, instance: {instance}\n")
+    import json
+    import os
+
+    # Ensure unique JSON file name
+    base_name = "domain_results_one.json"
+    json_file = base_name
+    i = 1
+    while os.path.exists(json_file):
+        json_file = f"domain_results_{i}.json"
+        i += 1
+
+    # Write results to JSON with iteration property
+    import json
+
+    for iteration, (domain_name, identifier, truth, instance, MSE) in enumerate(summary, start=0):
+        result = {
+            "iteration": np.floor(iteration/4),
+            "domain": domain_name,
+            "identifier": identifier,
+            "truth": truth,
+            "instance": instance
+        }
+
+        # Append to JSON file
+        if not os.path.exists(json_file):
+            with open(json_file, "w") as json_f:
+                json.dump([result], json_f, indent=4)
+        else:
+            with open(json_file, "r+") as json_f:
+                data = json.load(json_f)
+                data.append(result)
+                json_f.seek(0)
+                json.dump(data, json_f, indent=4)
+
+    print(f"Results saved to {json_file}")
 
     import os
     # Plot mse and other metrics as separate subplots in the same figure for each domain
@@ -233,7 +263,8 @@ gripper = Domain_sim(indexManager=indexMn ,DOMAIN_FILE="./pddlDomains/gripper_do
 rooms = Domain_sim(indexManager=indexMn ,DOMAIN_FILE="./pddlDomains/rooms_domain.pddl",PROBLEM_FILE="./pddlDomains/rooms_problem.pddl", action_offset=11, pred_offset= logistics.pred_size + blocksworld.pred_size + gripper.pred_size)
 
 if True:
-    model = train_and_evaluate_domains([logistics])
+    for i in range(10):
+        model = train_and_evaluate_domains([gripper])
     # torch.save(model.state_dict(), "./Parameters/test.pth")
 else:
     model = att_only.Att_PAM(output_dim=logistics.token_size, embed_dim=512, input_dim=logistics.token_size, head_number=8)

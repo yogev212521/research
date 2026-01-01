@@ -106,7 +106,7 @@ class Att_PAM(nn.Module):
             old_loss = 20
             j = 0
             current_delta = 1
-            while current_delta > delta:
+            while current_delta > delta and j < 20:
                 j +=1
                 for epoch, traces in enumerate(All_traces):
                     tr_traces = np.transpose(traces, (1, 0, 2, 3))
