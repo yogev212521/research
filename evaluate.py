@@ -68,13 +68,18 @@ def train_and_evaluate(
     training_iterations: int = 10,
     m_range_start: int = 2,
     m_range_end: int = 10,
+    repetitions: int = 1,
 ):
     """
     For m in [m_range_start .. m_range_end):
-      1. Generate m traces per selected domain  (trace_size actions each)
-      2. Train a fresh model until convergence    (delta-based stopping)
-      3. Evaluate predictions on each domain      (trace_length_eval actions)
-      4. Record identifier / truth / instance / MSE
+      For rep in [0 .. repetitions):
+        1. Generate m traces per selected domain  (trace_size actions each)
+        2. Train a fresh model until convergence    (delta-based stopping)
+        3. Evaluate predictions on each domain      (trace_length_eval actions)
+        4. Record identifier / truth / instance / MSE
+
+    Each training round m is repeated `repetitions` times.
+    All individual data points are stored so graphs display every run.
 
     Returns metric_history, summary list, and the last trained model.
     """
@@ -82,15 +87,23 @@ def train_and_evaluate(
     token_size = domain_list[0].token_size
     num_domains = len(domain_list)
 
+    # Save each domain's probabilistic predicates dict BEFORE Generate_trace
+    # overwrites domain.prob with a boolean
+    prob_dicts = {}
+    for d in domain_list:
+        prob_dicts[d.name] = dict(d.prob) if isinstance(d.prob, dict) else {}
+
     metric_history = {
-        d.name: {"identifier": [], "truth": [], "instance": [], "MSE": []}
+        d.name: {"identifier": [], "truth": [], "instance": [], "MSE": [], "m_values": []}
         for d in domain_list
     }
     summary = []
 
     for m in range(m_range_start, m_range_end):
+      for rep in range(repetitions):
+        rep_label = f" (rep {rep+1}/{repetitions})" if repetitions > 1 else ""
         print(f"\n{'='*60}")
-        print(f"  Training round {m}  —  {m} traces per domain  "
+        print(f"  Training round {m}{rep_label}  —  {m} traces per domain  "
               f"({m * num_domains} total)")
         print(f"{'='*60}")
 
@@ -127,23 +140,32 @@ def train_and_evaluate(
         # ── 3. evaluate on each domain ───────────────────────────
         for domain in domain_list:
             test_trace = asyncio.run(domain.Generate_trace(trace_length_eval))
+            domain_prob = prob_dicts[domain.name]  # use saved prob dict
 
             N = 0
             identifier, truth, instance, mse = 0, 0, 0, 0
+            num_tokens = len(test_trace[0]) if test_trace else 0
 
             for step in range(0, min(len(test_trace) - 1, trace_length_eval * 2), 2):
                 current_state = test_trace[step]
                 expected_next_state = test_trace[step + 1]
                 prediction = model.test(trace=np.array(current_state))[0]
 
-                for i, token in enumerate(expected_next_state, 1):
-                    for j in range(len(token)):
+                # Start at index 1 (skip action token), stop before last to
+                # avoid out-of-bounds when accessing prediction[i]
+                for i in range(1, min(len(expected_next_state), len(prediction))):
+                    token = expected_next_state[i]
+                    for j in range(len(token) - 2):  # -2 to safely access j+1, j+2
                         if token[j] == 1:
                             identifier += abs(
                                 prediction[i][j] - expected_next_state[i][j]
                             )
-                            if domain.prob and domain.prob.get(j):
-                                truth += 0
+                            if domain_prob and domain_prob.get(j):
+                                # Compare against known probability instead of
+                                # the single-sample outcome
+                                truth += abs(
+                                    prediction[i][j + 1] - domain_prob[j]
+                                )
                             else:
                                 truth += abs(
                                     prediction[i][j + 1]
@@ -167,7 +189,8 @@ def train_and_evaluate(
             metric_history[domain.name]["truth"].append(tr_avg)
             metric_history[domain.name]["instance"].append(in_avg)
             metric_history[domain.name]["MSE"].append(ms_avg)
-            summary.append((domain.name, id_avg, tr_avg, in_avg, ms_avg))
+            metric_history[domain.name]["m_values"].append(m)
+            summary.append((domain.name, id_avg, tr_avg, in_avg, ms_avg, m, rep))
 
             print(
                 f"  {domain.name:15s}  identifier={id_avg:.4f}  "
@@ -179,6 +202,18 @@ def train_and_evaluate(
 
 # ── Graph generation (line plots like Network.py) ────────────────────────────
 
+def _compute_avg_per_m(m_vals, values, trace_size):
+    """Group data points by m value, compute average per m, return sorted x and y_avg."""
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for m, v in zip(m_vals, values):
+        groups[m].append(v)
+    sorted_ms = sorted(groups.keys())
+    x_avg = [m * (trace_size * 2 - 1) for m in sorted_ms]
+    y_avg = [np.mean(groups[m]) for m in sorted_ms]
+    return x_avg, y_avg
+
+
 def plot_metrics_over_training(
     metric_history: dict[str, dict],
     m_range_start: int,
@@ -187,23 +222,37 @@ def plot_metrics_over_training(
     tag: str = "",
 ):
     """
-    For each domain, produce a line-plot figure (like Network.py):
+    For each domain, produce a figure:
       x-axis  = number of training states
       y-axis  = loss (identifier / truth / instance)
+    All individual data points are shown as scatter dots.
+    If repetitions > 1, an average line is also drawn.
     """
     os.makedirs("graphs", exist_ok=True)
 
     for domain_name, metrics in metric_history.items():
-        # x-axis: total training states at each round
-        # each round m → m traces × (trace_size*2-1) tokens per trace
-        m_values = list(range(m_range_start, m_range_end))
-        x_states = [m * (trace_size * 2 - 1) for m in m_values]
+        # Each domain gets its own subfolder
+        domain_dir = os.path.join("graphs", domain_name)
+        os.makedirs(domain_dir, exist_ok=True)
+
+        m_vals = metrics["m_values"]
+        # x position for each individual data point
+        x_all = [m * (trace_size * 2 - 1) for m in m_vals]
+        has_reps = len(m_vals) > len(set(m_vals))  # more points than unique m values
 
         fig, ax1 = plt.subplots(figsize=(10, 6))
 
-        ax1.plot(x_states, metrics["identifier"], marker="o", label="identifier")
-        ax1.plot(x_states, metrics["truth"], marker="o", label="truth")
-        ax1.plot(x_states, metrics["instance"], marker="o", label="instance")
+        colors = {"identifier": "tab:blue", "truth": "tab:orange", "instance": "tab:green"}
+        for mname, color in colors.items():
+            # Scatter all individual data points
+            ax1.scatter(x_all, metrics[mname], alpha=0.4, s=30, color=color, label=f"{mname} (runs)" if has_reps else mname)
+            if has_reps:
+                # Draw average line
+                x_avg, y_avg = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
+                ax1.plot(x_avg, y_avg, marker="o", color=color, linewidth=2, label=f"{mname} (avg)")
+            else:
+                ax1.plot(x_all, metrics[mname], marker="o", color=color, linewidth=2)
+
         ax1.set_ylabel("Loss (MAE)")
         ax1.set_xlabel("Number of training states")
         ax1.legend(loc="upper right")
@@ -213,9 +262,9 @@ def plot_metrics_over_training(
 
         plt.tight_layout()
         fname = f"eval_{tag}{domain_name}_metrics.png"
-        plt.savefig(os.path.join("graphs", fname))
+        plt.savefig(os.path.join(domain_dir, fname))
         plt.close(fig)
-        print(f"  Graph saved → graphs/{fname}")
+        print(f"  Graph saved → {domain_dir}/{fname}")
 
     # If multiple domains, also create a combined comparison plot
     if len(metric_history) > 1:
@@ -229,16 +278,25 @@ def _plot_combined_comparison(
     trace_size: int,
     tag: str = "",
 ):
-    """Combined figure: one subplot per metric, all domains overlaid."""
-    m_values = list(range(m_range_start, m_range_end))
-    x_states = [m * (trace_size * 2 - 1) for m in m_values]
+    """Combined figure: one subplot per metric, all domains overlaid.
+    Shows scatter for individual runs and average lines when repetitions > 1."""
     metric_names = ["identifier", "truth", "instance"]
 
     fig, axes = plt.subplots(len(metric_names), 1, figsize=(10, 4 * len(metric_names)), sharex=True)
 
     for ax, mname in zip(axes, metric_names):
         for dname, metrics in metric_history.items():
-            ax.plot(x_states, metrics[mname], marker="o", label=dname)
+            m_vals = metrics["m_values"]
+            x_all = [m * (trace_size * 2 - 1) for m in m_vals]
+            has_reps = len(m_vals) > len(set(m_vals))
+
+            ax.scatter(x_all, metrics[mname], alpha=0.4, s=30, label=f"{dname} (runs)" if has_reps else dname)
+            if has_reps:
+                x_avg, y_avg = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
+                ax.plot(x_avg, y_avg, marker="o", linewidth=2, label=f"{dname} (avg)")
+            else:
+                ax.plot(x_all, metrics[mname], marker="o", linewidth=2)
+
         ax.set_ylabel("Loss (MAE)")
         ax.set_title(f"{mname.capitalize()}")
         ax.legend(loc="upper right")
@@ -259,9 +317,10 @@ def _plot_combined_comparison(
 def save_results_json(summary: list, num_domains: int, filepath: str):
     """Write all (iteration, domain, metrics) records to a JSON file."""
     records = []
-    for idx, (domain_name, identifier, truth, instance, mse) in enumerate(summary):
+    for idx, (domain_name, identifier, truth, instance, mse, m_val, rep) in enumerate(summary):
         records.append({
-            "iteration": int(np.floor(idx / num_domains)),
+            "round": int(m_val),
+            "repetition": int(rep),
             "domain": domain_name,
             "identifier": float(identifier),
             "truth": float(truth),
@@ -360,11 +419,15 @@ def interactive_menu():
     tl = input("Trace length for evaluation   [default 20]: ").strip()
     trace_length_eval = int(tl) if tl.isdigit() else 20
 
+    rp = input("Repetitions per training round [default 1]: ").strip()
+    repetitions = int(rp) if rp.isdigit() and int(rp) >= 1 else 1
+
     # ── Run train & evaluate ──────────────────────────────────────
     print("\n" + "=" * 60)
     print("  STARTING TRAIN & EVALUATE PIPELINE")
     print(f"  Domains : {', '.join(selected.keys())}")
     print(f"  Rounds  : m = {m_start} .. {m_end - 1}")
+    print(f"  Reps    : {repetitions} per round")
     print(f"  Trace sz: {trace_size} actions/trace, eval length: {trace_length_eval}")
     print("=" * 60)
 
@@ -375,6 +438,7 @@ def interactive_menu():
         training_iterations=train_iter,
         m_range_start=m_start,
         m_range_end=m_end,
+        repetitions=repetitions,
     )
 
     # ── Generate graphs ───────────────────────────────────────────
@@ -407,15 +471,14 @@ def interactive_menu():
     print("\n" + "=" * 60)
     print("  EVALUATION SUMMARY")
     print("=" * 60)
-    # Show last-round metrics per domain
-    for dname in selected:
-        m = metric_history[dname]
+    # Show last-round metrics per domain (use metric_history keys which match domain.name)
+    for dname, met in metric_history.items():
         print(
             f"  {dname:15s}  (last round)  "
-            f"identifier={m['identifier'][-1]:.4f}  "
-            f"truth={m['truth'][-1]:.4f}  "
-            f"instance={m['instance'][-1]:.4f}  "
-            f"MSE={m['MSE'][-1]:.4f}"
+            f"identifier={met['identifier'][-1]:.4f}  "
+            f"truth={met['truth'][-1]:.4f}  "
+            f"instance={met['instance'][-1]:.4f}  "
+            f"MSE={met['MSE'][-1]:.4f}"
         )
     print(f"\n  Results : {json_path}")
     print(f"  Graphs  : graphs/")

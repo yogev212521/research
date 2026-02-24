@@ -124,20 +124,20 @@ def train_and_evaluate_domains(domains: list[Domain_sim], trace_length=20, prob=
     metric_history = {domain.name: {'identifier': [], 'truth': [], 'instance': [], 'MSE': []} for domain in domains}
     summary = []
 
-    for m in range(1,10):
+    for m in range(2,10):
         print(f"\nstarting itertaion {m}\n")
         traces = []
-        batch_size = 10
+        batch_size = 1
         trace = None
-        trace_size = 10
+        trace_size = 5
         for domain in domains:
             for _ in range(m):
-                while not trace or np.shape(trace)[0] != trace_size-1:
+                while not trace or np.shape(trace)[0] != trace_size*2-1:
                     trace = asyncio.run(domain.Generate_trace(trace_size))
                 traces.append(trace)
         traces = np.array(traces)
         np.random.shuffle(traces)
-        traces = traces.reshape(traces.shape[0] // batch_size, batch_size, *traces.shape[1:])
+        traces = traces.reshape(traces[0] // batch_size, batch_size, *traces.shape[1:])
         model = att_only.Att_PAM(output_dim=domains[0].token_size, embed_dim=512, input_dim=domains[0].token_size, head_number=8)
         model.train(traces, lr=0.00001, iterations=iterations, delta= 0.0001/m)
 
@@ -264,7 +264,7 @@ rooms = Domain_sim(indexManager=indexMn ,DOMAIN_FILE="./pddlDomains/rooms_domain
 
 if True:
     for i in range(10):
-        model = train_and_evaluate_domains([gripper])
+        model = train_and_evaluate_domains([logistics])
     # torch.save(model.state_dict(), "./Parameters/test.pth")
 else:
     model = att_only.Att_PAM(output_dim=logistics.token_size, embed_dim=512, input_dim=logistics.token_size, head_number=8)
