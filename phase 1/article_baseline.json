@@ -1,0 +1,36 @@
+{
+  "_source": "arXiv:2604.19043v2, Table 2 (Full evaluation results). Verified from PDF.",
+  "_metrics": {
+    "Err": "Number of incorrect predicate roles in the learned lifted action model (symbolic; N/A to a purely statistical network).",
+    "Agree": "Agreement score between predicted and ground-truth transitions.",
+    "StateAcc": "State (predicate) prediction accuracy.",
+    "ActionAcc": "Action identification accuracy."
+  },
+  "_note": "Our Att_PAM has no MILP layer, so the architecturally fair baseline is the 'wo_milp' row. The 'with_milp' row is shown only as headroom reference.",
+  "domains": {
+    "blocksworld_mnist": {
+      "wo_milp":  { "Err": 10, "Agree": 0.784, "StateAcc": 89.22, "ActionAcc": 13.67 },
+      "with_milp":{ "Err": 0,  "Agree": 0.977, "StateAcc": 97.81, "ActionAcc": 85.33 }
+    },
+    "gripper": {
+      "wo_milp":  { "Err": 6, "Agree": 0.724, "StateAcc": 86.22, "ActionAcc": 7.60 },
+      "with_milp":{ "Err": 0, "Agree": 0.978, "StateAcc": 100.0, "ActionAcc": 100.0 }
+    },
+    "logistics": {
+      "wo_milp":  { "Err": 0, "Agree": 0.979, "StateAcc": 99.93, "ActionAcc": 99.67 },
+      "with_milp":{ "Err": 0, "Agree": 0.983, "StateAcc": 99.89, "ActionAcc": 99.56 }
+    },
+    "blocksworld_synth": {
+      "wo_milp":  { "Err": 4, "Agree": 0.899, "StateAcc": 93.90, "ActionAcc": 66.67 },
+      "with_milp":{ "Err": 0, "Agree": 0.976, "StateAcc": 99.29, "ActionAcc": 88.67 }
+    },
+    "hanoi": {
+      "wo_milp":  { "Err": 0, "Agree": 0.926, "StateAcc": 97.15, "ActionAcc": 57.60 },
+      "with_milp":{ "Err": 0, "Agree": 0.940, "StateAcc": 98.55, "ActionAcc": 81.40 }
+    },
+    "puzzle8": {
+      "wo_milp":  { "Err": 0, "Agree": 0.985, "StateAcc": 99.90, "ActionAcc": 97.40 },
+      "with_milp":{ "Err": 0, "Agree": 0.985, "StateAcc": 99.77, "ActionAcc": 92.60 }
+    }
+  }
+}

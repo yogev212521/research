@@ -1,0 +1,151 @@
+{
+  "timestamp": "2026-06-22T14:03:50.133713",
+  "config": {
+    "domains": [
+      "hanoi",
+      "puzzle8",
+      "logistics",
+      "gripper",
+      "blockworld"
+    ],
+    "num_traces": 40,
+    "trace_size": 5,
+    "iterations": 10,
+    "lr": 0.0001,
+    "eval_traces": 10,
+    "eval_length": 20
+  },
+  "baseline_source": "arXiv:2604.19043v2, Table 2 (Full evaluation results). Verified from PDF.",
+  "results": {
+    "hanoi": {
+      "ours": {
+        "state_accuracy": 97.2737327250495,
+        "state_accuracy_std": 0.5079137880338122,
+        "action_accuracy": 100.0,
+        "action_accuracy_std": 0.0,
+        "num_train_traces": 40,
+        "eval_traces": 10
+      },
+      "paper_wo_milp": {
+        "Err": 0,
+        "Agree": 0.926,
+        "StateAcc": 97.15,
+        "ActionAcc": 57.6
+      },
+      "paper_with_milp": {
+        "Err": 0,
+        "Agree": 0.94,
+        "StateAcc": 98.55,
+        "ActionAcc": 81.4
+      },
+      "delta_vs_wo_milp": {
+        "StateAcc": 0.12,
+        "ActionAcc": 42.4
+      }
+    },
+    "puzzle8": {
+      "ours": {
+        "state_accuracy": 98.10423666949822,
+        "state_accuracy_std": 0.1093361184881228,
+        "action_accuracy": 100.0,
+        "action_accuracy_std": 0.0,
+        "num_train_traces": 40,
+        "eval_traces": 10
+      },
+      "paper_wo_milp": {
+        "Err": 0,
+        "Agree": 0.985,
+        "StateAcc": 99.9,
+        "ActionAcc": 97.4
+      },
+      "paper_with_milp": {
+        "Err": 0,
+        "Agree": 0.985,
+        "StateAcc": 99.77,
+        "ActionAcc": 92.6
+      },
+      "delta_vs_wo_milp": {
+        "StateAcc": -1.8,
+        "ActionAcc": 2.6
+      }
+    },
+    "logistics": {
+      "ours": {
+        "state_accuracy": 97.31053881499432,
+        "state_accuracy_std": 0.5954236523509866,
+        "action_accuracy": 95.78947368421053,
+        "action_accuracy_std": 3.938586722919939,
+        "num_train_traces": 40,
+        "eval_traces": 10
+      },
+      "paper_wo_milp": {
+        "Err": 0,
+        "Agree": 0.979,
+        "StateAcc": 99.93,
+        "ActionAcc": 99.67
+      },
+      "paper_with_milp": {
+        "Err": 0,
+        "Agree": 0.983,
+        "StateAcc": 99.89,
+        "ActionAcc": 99.56
+      },
+      "delta_vs_wo_milp": {
+        "StateAcc": -2.62,
+        "ActionAcc": -3.88
+      }
+    },
+    "gripper": {
+      "ours": {
+        "state_accuracy": 96.82109069867184,
+        "state_accuracy_std": 0.21966144006817567,
+        "action_accuracy": 100.0,
+        "action_accuracy_std": 0.0,
+        "num_train_traces": 40,
+        "eval_traces": 10
+      },
+      "paper_wo_milp": {
+        "Err": 6,
+        "Agree": 0.724,
+        "StateAcc": 86.22,
+        "ActionAcc": 7.6
+      },
+      "paper_with_milp": {
+        "Err": 0,
+        "Agree": 0.978,
+        "StateAcc": 100.0,
+        "ActionAcc": 100.0
+      },
+      "delta_vs_wo_milp": {
+        "StateAcc": 10.6,
+        "ActionAcc": 92.4
+      }
+    },
+    "blockworld": {
+      "ours": {
+        "state_accuracy": 98.27905126593353,
+        "state_accuracy_std": 0.08009212578574566,
+        "action_accuracy": 100.0,
+        "action_accuracy_std": 0.0,
+        "num_train_traces": 40,
+        "eval_traces": 10
+      },
+      "paper_wo_milp": {
+        "Err": 10,
+        "Agree": 0.784,
+        "StateAcc": 89.22,
+        "ActionAcc": 13.67
+      },
+      "paper_with_milp": {
+        "Err": 0,
+        "Agree": 0.977,
+        "StateAcc": 97.81,
+        "ActionAcc": 85.33
+      },
+      "delta_vs_wo_milp": {
+        "StateAcc": 9.06,
+        "ActionAcc": 86.33
+      }
+    }
+  }
+}

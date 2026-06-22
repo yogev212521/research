@@ -25,13 +25,13 @@
   (:action put-down
     :parameters (?x - block)
     :precondition (and (holding ?x) (tests))
-    :effect (and (ontable ?x) (clear ?x) (handempty) (not (holding ?x)) (probabilistic 0.5 (not (tests))))
+    :effect (and (ontable ?x) (clear ?x) (handempty) (not (holding ?x)))
   )
 
   (:action stack
     :parameters (?x - block ?y - block)
     :precondition (and (holding ?x) (clear ?y) (not (tests)))
-    :effect (and (not (holding ?x)) (not (clear ?y)) (handempty) (on ?x ?y) (clear ?x)(probabilistic 0.5 (tests)))
+    :effect (and (not (holding ?x)) (not (clear ?y)) (handempty) (on ?x ?y) (clear ?x))
   )
 
   (:action unstack

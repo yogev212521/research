@@ -1,0 +1,28 @@
+{
+  "domain": "hanoi",
+  "timestamp": "2026-06-22T11:55:57.824714",
+  "article_baseline": {
+    "state_accuracy": 98.55,
+    "action_accuracy": 81.4,
+    "model_error": 0.0,
+    "num_objects": 7,
+    "num_propositions": 55,
+    "num_actions": 120
+  },
+  "our_results": {
+    "state_accuracy": 1.0,
+    "action_accuracy": 1.0,
+    "state_mae": 0.0,
+    "action_mae": 0.0,
+    "model_error": 0.0,
+    "num_traces": 5,
+    "trace_length": 3
+  },
+  "comparisons": {
+    "state_accuracy_delta": 0.014500000000000068,
+    "action_accuracy_delta": 0.18599999999999994,
+    "state_accuracy_pct_diff": 1.4713343480466838,
+    "action_accuracy_pct_diff": 22.85012285012284
+  },
+  "traces": []
+}

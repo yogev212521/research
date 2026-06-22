@@ -1,0 +1,272 @@
+[
+    {
+        "round": 5,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.9383602341549704,
+        "truth": 0.6835711627806224,
+        "instance": 0.6085136593723417,
+        "MSE": 76.02510553745877
+    },
+    {
+        "round": 5,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.507405325888923,
+        "truth": 0.47133367154470407,
+        "instance": 0.29825289975234204,
+        "MSE": 30.25568370063838
+    },
+    {
+        "round": 5,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.8921454620890225,
+        "truth": 0.6509146420204409,
+        "instance": 0.5715464195308,
+        "MSE": 69.10776098797375
+    },
+    {
+        "round": 6,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.7511647847184743,
+        "truth": 0.580256146031921,
+        "instance": 0.45447955194539086,
+        "MSE": 52.27702087046399
+    },
+    {
+        "round": 6,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.34687596526587516,
+        "truth": 0.38968464001309033,
+        "instance": 0.21184364468052347,
+        "MSE": 24.150638169679592
+    },
+    {
+        "round": 6,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.4888375155144156,
+        "truth": 0.4061144560154599,
+        "instance": 0.23726895498629558,
+        "MSE": 34.41505863842313
+    },
+    {
+        "round": 7,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.8495763866932109,
+        "truth": 0.6405974855478798,
+        "instance": 0.5449936060944484,
+        "MSE": 62.986125433871436
+    },
+    {
+        "round": 7,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.5004747668803059,
+        "truth": 0.39833086565415904,
+        "instance": 0.22417771437853687,
+        "MSE": 41.267272845655974
+    },
+    {
+        "round": 7,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.4542179584353177,
+        "truth": 0.3651193609419771,
+        "instance": 0.21630030769749561,
+        "MSE": 29.125587750746448
+    },
+    {
+        "round": 8,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.41113029622632746,
+        "truth": 0.3452927908575576,
+        "instance": 0.18303443270387373,
+        "MSE": 32.68349820493241
+    },
+    {
+        "round": 8,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.4342830778511528,
+        "truth": 0.3482989337483629,
+        "instance": 0.2054015739017464,
+        "MSE": 31.882198399111537
+    },
+    {
+        "round": 8,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.4712815102142155,
+        "truth": 0.3707633201138709,
+        "instance": 0.21815655703222464,
+        "MSE": 36.04360788397286
+    },
+    {
+        "round": 9,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.7392868221016421,
+        "truth": 0.5804600807692936,
+        "instance": 0.47119169886429263,
+        "MSE": 49.481723053444256
+    },
+    {
+        "round": 9,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.3231755681697215,
+        "truth": 0.30566777490834096,
+        "instance": 0.16954359594644208,
+        "MSE": 24.038230131285044
+    },
+    {
+        "round": 9,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.5082776628594886,
+        "truth": 0.4590204183553015,
+        "instance": 0.26891966289227265,
+        "MSE": 36.02398966241547
+    },
+    {
+        "round": 10,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.32654923367425165,
+        "truth": 0.32015744260835083,
+        "instance": 0.14422027703337584,
+        "MSE": 18.82896349422908
+    },
+    {
+        "round": 10,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.36895900670372483,
+        "truth": 0.276537064572485,
+        "instance": 0.16556271774057604,
+        "MSE": 23.53847380973158
+    },
+    {
+        "round": 10,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.2966861800697429,
+        "truth": 0.2614408067518567,
+        "instance": 0.14391454340135357,
+        "MSE": 19.742322205231158
+    },
+    {
+        "round": 11,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.5134589105534056,
+        "truth": 0.4481192295144122,
+        "instance": 0.26499847431544477,
+        "MSE": 35.34068023413502
+    },
+    {
+        "round": 11,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.5032094541582324,
+        "truth": 0.43546828694331147,
+        "instance": 0.24167342615158607,
+        "MSE": 36.905327922844336
+    },
+    {
+        "round": 11,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.3670096186935111,
+        "truth": 0.29054801137130143,
+        "instance": 0.15721663641813916,
+        "MSE": 29.137327533270703
+    },
+    {
+        "round": 12,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.3970851853755253,
+        "truth": 0.36419225032115854,
+        "instance": 0.20360694669677765,
+        "MSE": 27.269312401535032
+    },
+    {
+        "round": 12,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.31479224933171146,
+        "truth": 0.24791579283974183,
+        "instance": 0.1245550474512481,
+        "MSE": 23.500169046488917
+    },
+    {
+        "round": 12,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.37747724929627463,
+        "truth": 0.2645070744575395,
+        "instance": 0.1514736147820748,
+        "MSE": 27.253923782809686
+    },
+    {
+        "round": 13,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.42326948831829686,
+        "truth": 0.261013933478487,
+        "instance": 0.17661153240959443,
+        "MSE": 31.57550096864148
+    },
+    {
+        "round": 13,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.400168078459589,
+        "truth": 0.36585818094630745,
+        "instance": 0.20631343135184618,
+        "MSE": 25.829267412220567
+    },
+    {
+        "round": 13,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.36416259286208796,
+        "truth": 0.25556373228811513,
+        "instance": 0.1553090171347811,
+        "MSE": 27.073954592741067
+    },
+    {
+        "round": 14,
+        "repetition": 0,
+        "domain": "logistics",
+        "identifier": 0.4404548387873757,
+        "truth": 0.3405274211758157,
+        "instance": 0.19943208310779972,
+        "MSE": 30.276397050533582
+    },
+    {
+        "round": 14,
+        "repetition": 1,
+        "domain": "logistics",
+        "identifier": 0.37598883497636193,
+        "truth": 0.2507191559486203,
+        "instance": 0.14847020264782118,
+        "MSE": 22.487763036384656
+    },
+    {
+        "round": 14,
+        "repetition": 2,
+        "domain": "logistics",
+        "identifier": 0.24702338752304687,
+        "truth": 0.18807127709793536,
+        "instance": 0.10017962578785955,
+        "MSE": 17.91034858168052
+    }
+]

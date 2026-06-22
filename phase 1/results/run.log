@@ -1,0 +1,976 @@
+
+================================================================
+  DOMAIN: hanoi
+================================================================
+  predicates(token map): 2  token_size=70  action_space=20
+  Generating 40 training traces (5 actions each)...
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+No applicable actions, giving up.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+  Got 40 valid training traces.
+  Training Att_PAM (iterations=10, lr=0.0001)...
+Epoch 1, Loss: 0.0013198112603276968
+Epoch 2, Loss: 0.000590668711811304
+Epoch 3, Loss: 0.00046586518874391913
+Epoch 4, Loss: 0.00035774072166532277
+Epoch 5, Loss: 0.0003740181098692119
+Epoch 6, Loss: 0.0003366582153830677
+Epoch 7, Loss: 0.00025640960375312717
+Epoch 8, Loss: 0.000224224929115735
+Epoch 9, Loss: 0.00018120507302228362
+Epoch 10, Loss: 0.00015590067487210036
+Epoch 11, Loss: 0.0001446023350581527
+Epoch 12, Loss: 0.0001360300462692976
+Epoch 13, Loss: 0.00011648188810795546
+Epoch 14, Loss: 0.00011214693513466046
+Epoch 15, Loss: 0.00010295262763975188
+Epoch 16, Loss: 0.00010505075333639979
+Epoch 17, Loss: 8.91225048690103e-05
+Epoch 18, Loss: 8.48972427775152e-05
+Epoch 19, Loss: 8.072691998677329e-05
+Epoch 20, Loss: 8.358620543731376e-05
+Epoch 21, Loss: 7.497780170524493e-05
+Epoch 22, Loss: 7.08991035935469e-05
+Epoch 23, Loss: 6.899344152770937e-05
+Epoch 24, Loss: 6.965659849811345e-05
+Epoch 25, Loss: 6.784058787161485e-05
+Epoch 26, Loss: 6.260703667066991e-05
+Epoch 27, Loss: 5.9967098059132697e-05
+Epoch 28, Loss: 5.613614630419761e-05
+Epoch 29, Loss: 5.878779920749366e-05
+Epoch 30, Loss: 4.9965013022301716e-05
+Epoch 31, Loss: 5.021649703849107e-05
+Epoch 32, Loss: 4.8792943562148136e-05
+Epoch 33, Loss: 4.556952408165671e-05
+Epoch 34, Loss: 3.982915659435093e-05
+Epoch 35, Loss: 4.301963563193567e-05
+Epoch 36, Loss: 4.013834986835718e-05
+Epoch 37, Loss: 3.983091810368933e-05
+Epoch 38, Loss: 3.525039719534107e-05
+Epoch 39, Loss: 3.224756655981764e-05
+Epoch 40, Loss: 3.060302115045488e-05
+finished 1/10.
+Epoch 1, Loss: 3.2260972511721774e-05
+Epoch 2, Loss: 3.030615407624282e-05
+Epoch 3, Loss: 2.6015404000645503e-05
+Epoch 4, Loss: 2.8485063376137985e-05
+Epoch 5, Loss: 2.7301334193907677e-05
+Epoch 6, Loss: 2.460818795952946e-05
+Epoch 7, Loss: 2.555569735704921e-05
+Epoch 8, Loss: 2.3575371233164333e-05
+Epoch 9, Loss: 2.323685730516445e-05
+Epoch 10, Loss: 2.3226083430927247e-05
+Epoch 11, Loss: 2.1072461095172912e-05
+Epoch 12, Loss: 2.107594918925315e-05
+Epoch 13, Loss: 1.9243149654357695e-05
+Epoch 14, Loss: 2.2473443823400886e-05
+Epoch 15, Loss: 1.9213176710763945e-05
+Epoch 16, Loss: 2.423014484520536e-05
+Epoch 17, Loss: 1.906011639221106e-05
+Epoch 18, Loss: 1.90452832612209e-05
+Epoch 19, Loss: 1.9069626432610676e-05
+Epoch 20, Loss: 1.852773639257066e-05
+Epoch 21, Loss: 1.8057648776448332e-05
+Epoch 22, Loss: 1.9425507343839853e-05
+Epoch 23, Loss: 1.8695044855121522e-05
+Epoch 24, Loss: 1.7840030704974196e-05
+Epoch 25, Loss: 1.3764077084488236e-05
+Epoch 26, Loss: 1.7334215590381065e-05
+Epoch 27, Loss: 1.2120471001253464e-05
+Epoch 28, Loss: 1.5366619118140078e-05
+Epoch 29, Loss: 1.4909379024174995e-05
+Epoch 30, Loss: 1.1623104001046158e-05
+Epoch 31, Loss: 1.3350202789297327e-05
+Epoch 32, Loss: 1.2112508920836263e-05
+Epoch 33, Loss: 1.5140663890633732e-05
+Epoch 34, Loss: 1.0857710003620014e-05
+Epoch 35, Loss: 1.255786537512904e-05
+Epoch 36, Loss: 1.5600926417391747e-05
+Epoch 37, Loss: 1.1016247481165919e-05
+Epoch 38, Loss: 1.404184895363869e-05
+Epoch 39, Loss: 1.3200345892983024e-05
+Epoch 40, Loss: 1.2040281762892847e-05
+finished 2/10.
+Epoch 1, Loss: 1.3383541408984457e-05
+Epoch 2, Loss: 1.2670120122493245e-05
+Epoch 3, Loss: 1.2375464757496957e-05
+Epoch 4, Loss: 1.5874485688982533e-05
+Epoch 5, Loss: 1.3987145030114334e-05
+Epoch 6, Loss: 9.881206642603501e-06
+Epoch 7, Loss: 1.4059040404390544e-05
+Epoch 8, Loss: 1.3127233978593722e-05
+Epoch 9, Loss: 1.2407078611431643e-05
+Epoch 10, Loss: 1.2750619680446107e-05
+Epoch 11, Loss: 1.1962949611188378e-05
+Epoch 12, Loss: 1.1802824337792117e-05
+Epoch 13, Loss: 1.0785680024127941e-05
+Epoch 14, Loss: 1.0836920228030068e-05
+Epoch 15, Loss: 1.1316284326312597e-05
+Epoch 16, Loss: 9.889809371088632e-06
+Epoch 17, Loss: 1.1102310782007408e-05
+Epoch 18, Loss: 1.040775441651931e-05
+Epoch 19, Loss: 1.0407901027065235e-05
+Epoch 20, Loss: 9.451267942495178e-06
+Epoch 21, Loss: 1.0174942690355238e-05
+Epoch 22, Loss: 1.138121970143402e-05
+Epoch 23, Loss: 1.0505681166250724e-05
+Epoch 24, Loss: 7.469103911716956e-06
+Epoch 25, Loss: 6.708570435876027e-06
+Epoch 26, Loss: 1.0817249676620123e-05
+Epoch 27, Loss: 6.606216902582673e-06
+Epoch 28, Loss: 9.973725082090822e-06
+Epoch 29, Loss: 7.105578060873086e-06
+Epoch 30, Loss: 6.383769596141065e-06
+Epoch 31, Loss: 7.4899156970786865e-06
+Epoch 32, Loss: 6.80028442729963e-06
+Epoch 33, Loss: 1.0333921272831503e-05
+Epoch 34, Loss: 6.1556671425933015e-06
+Epoch 35, Loss: 6.678568934148643e-06
+Epoch 36, Loss: 9.74758777374518e-06
+Epoch 37, Loss: 6.202210261108121e-06
+Epoch 38, Loss: 8.834161144477548e-06
+Epoch 39, Loss: 9.427416262042244e-06
+Epoch 40, Loss: 5.904345471208217e-06
+finished 3/10.
+Epoch 1, Loss: 8.111012903100345e-06
+Epoch 2, Loss: 5.834559578943299e-06
+Epoch 3, Loss: 4.691237336373888e-06
+Epoch 4, Loss: 8.369376882910728e-06
+Epoch 5, Loss: 5.660150509356754e-06
+Epoch 6, Loss: 6.043324356141966e-06
+Epoch 7, Loss: 8.324543614435242e-06
+Epoch 8, Loss: 8.851789334585192e-06
+Epoch 9, Loss: 9.21278460737085e-06
+Epoch 10, Loss: 8.86296647877316e-06
+Epoch 11, Loss: 7.690485108469148e-06
+Epoch 12, Loss: 7.442149944836274e-06
+Epoch 13, Loss: 7.735201324976516e-06
+Epoch 14, Loss: 6.8568686401704325e-06
+Epoch 15, Loss: 7.135049509088276e-06
+Epoch 16, Loss: 5.71323762414977e-06
+Epoch 17, Loss: 6.934987231943523e-06
+Epoch 18, Loss: 7.317700237763347e-06
+Epoch 19, Loss: 6.855280116724316e-06
+Epoch 20, Loss: 6.355770074151223e-06
+Epoch 21, Loss: 6.740874687238829e-06
+Epoch 22, Loss: 6.280988964135759e-06
+Epoch 23, Loss: 5.527757184609072e-06
+Epoch 24, Loss: 6.345443307509413e-06
+Epoch 25, Loss: 4.244355477567297e-06
+Epoch 26, Loss: 5.79760453547351e-06
+Epoch 27, Loss: 4.384397561807418e-06
+Epoch 28, Loss: 6.847837630630238e-06
+Epoch 29, Loss: 4.3892525354749525e-06
+Epoch 30, Loss: 4.472521868592594e-06
+Epoch 31, Loss: 4.51926880487008e-06
+Epoch 32, Loss: 3.976888365286868e-06
+Epoch 33, Loss: 5.743379824707518e-06
+Epoch 34, Loss: 3.824728719337145e-06
+Epoch 35, Loss: 4.219472793920432e-06
+Epoch 36, Loss: 5.157935447641648e-06
+Epoch 37, Loss: 4.2133524402743205e-06
+Epoch 38, Loss: 5.1620502745208794e-06
+Epoch 39, Loss: 5.633284581563203e-06
+Epoch 40, Loss: 4.745420847029891e-06
+finished 4/10.
+Epoch 1, Loss: 4.815053125639679e-06
+Epoch 2, Loss: 3.931042374460958e-06
+Epoch 3, Loss: 3.853065027215052e-06
+Epoch 4, Loss: 5.255461564956931e-06
+Epoch 5, Loss: 3.6014296711073255e-06
+Epoch 6, Loss: 3.962256823797361e-06
+Epoch 7, Loss: 4.6224358811741695e-06
+Epoch 8, Loss: 4.7439146328542845e-06
+Epoch 9, Loss: 5.0213608119520355e-06
+Epoch 10, Loss: 4.8466209591424555e-06
+Epoch 11, Loss: 3.951920461986447e-06
+Epoch 12, Loss: 3.823642782663228e-06
+Epoch 13, Loss: 4.221689505357063e-06
+Epoch 14, Loss: 3.880548865708988e-06
+Epoch 15, Loss: 3.864079235427198e-06
+Epoch 16, Loss: 4.0498259295418395e-06
+Epoch 17, Loss: 4.498820180742768e-06
+Epoch 18, Loss: 4.1291903471574186e-06
+Epoch 19, Loss: 4.404202081786935e-06
+Epoch 20, Loss: 3.918389393220423e-06
+Epoch 21, Loss: 4.8384189540229275e-06
+Epoch 22, Loss: 3.5898775422538166e-06
+Epoch 23, Loss: 3.965688483731355e-06
+Epoch 24, Loss: 3.388192635611631e-06
+Epoch 25, Loss: 3.3048920613509836e-06
+Epoch 26, Loss: 3.6984544294682563e-06
+Epoch 27, Loss: 3.433774236327736e-06
+Epoch 28, Loss: 3.6544243812386413e-06
+Epoch 29, Loss: 3.31264409396681e-06
+Epoch 30, Loss: 2.7347230570740065e-06
+Epoch 31, Loss: 3.038425211343565e-06
+Epoch 32, Loss: 2.7461786430649227e-06
+Epoch 33, Loss: 3.5235124414612073e-06
+Epoch 34, Loss: 2.8305279101914494e-06
+Epoch 35, Loss: 2.9981089937791696e-06
+Epoch 36, Loss: 3.3837149658211276e-06
+Epoch 37, Loss: 3.1604995001544013e-06
+Epoch 38, Loss: 2.9018303393968383e-06
+Epoch 39, Loss: 2.968586159113329e-06
+Epoch 40, Loss: 2.972287029479048e-06
+finished 5/10.
+Epoch 1, Loss: 3.1222316920320735e-06
+Epoch 2, Loss: 2.726808952502324e-06
+Epoch 3, Loss: 2.638486284922692e-06
+Epoch 4, Loss: 3.003438223458943e-06
+Epoch 5, Loss: 3.141206843793043e-06
+Epoch 6, Loss: 2.5662424832262333e-06
+Epoch 7, Loss: 2.787668017845135e-06
+Epoch 8, Loss: 2.6641960630513493e-06
+Epoch 9, Loss: 2.6831182367459407e-06
+Epoch 10, Loss: 2.74752392215305e-06
+Epoch 11, Loss: 3.114508808721439e-06
+Epoch 12, Loss: 2.869356967494241e-06
+Epoch 13, Loss: 2.964261193483253e-06
+Epoch 14, Loss: 3.339672002766747e-06
+Epoch 15, Loss: 2.9772884317935677e-06
+Epoch 16, Loss: 2.504872873032582e-06
+Epoch 17, Loss: 2.806575821523438e-06
+Epoch 18, Loss: 2.9629152322740993e-06
+Epoch 19, Loss: 2.7161855541635306e-06
+Epoch 20, Loss: 2.896886735470616e-06
+Epoch 21, Loss: 2.5417828055651626e-06
+Epoch 22, Loss: 2.6893049380305454e-06
+Epoch 23, Loss: 2.3815606255084277e-06
+Epoch 24, Loss: 2.243956350866938e-06
+Epoch 25, Loss: 1.9943068764405326e-06
+Epoch 26, Loss: 2.5762213681446156e-06
+Epoch 27, Loss: 1.9583287212299185e-06
+Epoch 28, Loss: 2.5805872610362714e-06
+Epoch 29, Loss: 2.288312407472404e-06
+Epoch 30, Loss: 2.2323727989714826e-06
+Epoch 31, Loss: 2.2233066374610644e-06
+Epoch 32, Loss: 2.4777571525191887e-06
+Epoch 33, Loss: 2.2878733034303876e-06
+Epoch 34, Loss: 2.1607756934827194e-06
+Epoch 35, Loss: 2.1178962924750523e-06
+Epoch 36, Loss: 2.2378526409738697e-06
+Epoch 37, Loss: 2.2082657324062894e-06
+Epoch 38, Loss: 2.3877717012510402e-06
+Epoch 39, Loss: 2.341227400393109e-06
+Epoch 40, Loss: 2.0788384063052945e-06
+finished 6/10.
+Epoch 1, Loss: 2.8015260340907845e-06
+Epoch 2, Loss: 2.3294844595511677e-06
+Epoch 3, Loss: 2.0037162357766645e-06
+Epoch 4, Loss: 2.529035373299848e-06
+Epoch 5, Loss: 2.368298919463996e-06
+Epoch 6, Loss: 2.0747530470544008e-06
+Epoch 7, Loss: 2.086670519929612e-06
+Epoch 8, Loss: 2.5189131974912017e-06
+Epoch 9, Loss: 2.673518883966608e-06
+Epoch 10, Loss: 1.988869667002291e-06
+Epoch 11, Loss: 2.493136207704083e-06
+Epoch 12, Loss: 2.4606630177004264e-06
+Epoch 13, Loss: 2.49842864832317e-06
+Epoch 14, Loss: 1.8387156160315498e-06
+Epoch 15, Loss: 2.1501941319002073e-06
+Epoch 16, Loss: 1.5834754094612435e-06
+Epoch 17, Loss: 2.1212117189861603e-06
+Epoch 18, Loss: 1.7454359522162122e-06
+Epoch 19, Loss: 1.8025513327302178e-06
+Epoch 20, Loss: 1.6868897091626423e-06
+Epoch 21, Loss: 1.869422749223304e-06
+Epoch 22, Loss: 1.6381267414544708e-06
+Epoch 23, Loss: 2.170107882193406e-06
+Epoch 24, Loss: 1.855682285167859e-06
+Epoch 25, Loss: 1.9232069917052287e-06
+Epoch 26, Loss: 1.6742377965783817e-06
+Epoch 27, Loss: 1.6760224980316708e-06
+Epoch 28, Loss: 1.8862484012061032e-06
+Epoch 29, Loss: 2.1238580757199087e-06
+Epoch 30, Loss: 1.6763615803938592e-06
+Epoch 31, Loss: 1.8913339317805366e-06
+Epoch 32, Loss: 1.5307070725611994e-06
+Epoch 33, Loss: 1.88881811027386e-06
+Epoch 34, Loss: 1.6226651723627584e-06
+Epoch 35, Loss: 1.5044955262055737e-06
+Epoch 36, Loss: 2.0247275642759632e-06
+Epoch 37, Loss: 1.8209012978331884e-06
+Epoch 38, Loss: 1.8378702179688844e-06
+Epoch 39, Loss: 2.0320321709732525e-06
+Epoch 40, Loss: 1.7908985228132224e-06
+finished 7/10.
+Epoch 1, Loss: 2.1323313603716088e-06
+Epoch 2, Loss: 1.8503222236176953e-06
+Epoch 3, Loss: 1.8344952877669129e-06
+Epoch 4, Loss: 2.4118314740917413e-06
+Epoch 5, Loss: 1.915252164508274e-06
+Epoch 6, Loss: 1.4016345176059985e-06
+Epoch 7, Loss: 1.8204573962066206e-06
+Epoch 8, Loss: 1.5857818880249397e-06
+Epoch 9, Loss: 1.6931871641645558e-06
+Epoch 10, Loss: 1.7180786016979254e-06
+Epoch 11, Loss: 1.9047331079491414e-06
+Epoch 12, Loss: 1.8560694115876685e-06
+Epoch 13, Loss: 1.644602343731094e-06
+Epoch 14, Loss: 2.0591543034242933e-06
+Epoch 15, Loss: 1.7941637906915275e-06
+Epoch 16, Loss: 1.755846233209013e-06
+Epoch 17, Loss: 1.706143166302354e-06
+Epoch 18, Loss: 1.7425561281925185e-06
+Epoch 19, Loss: 1.6449979739263653e-06
+Epoch 20, Loss: 1.7648882931098342e-06
+Epoch 21, Loss: 1.6595890883763786e-06
+Epoch 22, Loss: 1.5240712173181236e-06
+Epoch 23, Loss: 1.3931587091065011e-06
+Epoch 24, Loss: 1.6822532188598417e-06
+Epoch 25, Loss: 1.503882617726049e-06
+Epoch 26, Loss: 1.7301907519140514e-06
+Epoch 27, Loss: 1.7873235265142284e-06
+Epoch 28, Loss: 1.6010516901587834e-06
+Epoch 29, Loss: 1.5681025843150564e-06
+Epoch 30, Loss: 1.4835453612249694e-06
+Epoch 31, Loss: 1.544077667858801e-06
+Epoch 32, Loss: 1.4165076891003992e-06
+Epoch 33, Loss: 1.5287675068975658e-06
+Epoch 34, Loss: 1.464191041122831e-06
+Epoch 35, Loss: 1.5291589306798413e-06
+Epoch 36, Loss: 1.5323922980314818e-06
+Epoch 37, Loss: 1.387593647450558e-06
+Epoch 38, Loss: 1.7280224938076571e-06
+Epoch 39, Loss: 1.4692719787490205e-06
+Epoch 40, Loss: 1.473083716518886e-06
+finished 8/10.
+Epoch 1, Loss: 1.7611286693863803e-06
+Epoch 2, Loss: 1.3110294048601645e-06
+Epoch 3, Loss: 1.351838227492408e-06
+Epoch 4, Loss: 1.5930575727907125e-06
+Epoch 5, Loss: 1.6431388758064714e-06
+Epoch 6, Loss: 1.4666984498035163e-06
+Epoch 7, Loss: 1.2460837979233474e-06
+Epoch 8, Loss: 1.3028709417994833e-06
+Epoch 9, Loss: 1.241614450009365e-06
+Epoch 10, Loss: 1.2738267059830831e-06
+Epoch 11, Loss: 1.3320961443241685e-06
+Epoch 12, Loss: 1.2259023833394167e-06
+Epoch 13, Loss: 1.2277909945623834e-06
+Epoch 14, Loss: 1.1511679986142554e-06
+Epoch 15, Loss: 1.2242473303558655e-06
+Epoch 16, Loss: 1.2958687875652686e-06
+Epoch 17, Loss: 1.1556470781215466e-06
+Epoch 18, Loss: 1.3429786122287624e-06
+Epoch 19, Loss: 1.20819950097939e-06
+Epoch 20, Loss: 1.2211400644446257e-06
+Epoch 21, Loss: 1.2711811905319337e-06
+Epoch 22, Loss: 1.5019368220237084e-06
+Epoch 23, Loss: 1.1822906344605145e-06
+Epoch 24, Loss: 1.5722238913440378e-06
+Epoch 25, Loss: 1.1342731795593864e-06
+Epoch 26, Loss: 1.143441909334797e-06
+Epoch 27, Loss: 1.2915983688799316e-06
+Epoch 28, Loss: 1.4376846820596255e-06
+Epoch 29, Loss: 1.2051454859829392e-06
+Epoch 30, Loss: 1.1317049029457848e-06
+Epoch 31, Loss: 1.2532568234746577e-06
+Epoch 32, Loss: 1.214264602822368e-06
+Epoch 33, Loss: 1.4111901009528083e-06
+Epoch 34, Loss: 1.184710617962992e-06
+Epoch 35, Loss: 1.238026834471384e-06
+Epoch 36, Loss: 1.0521461945245393e-06
+Epoch 37, Loss: 1.1931307881241083e-06
+Epoch 38, Loss: 1.3563865877586067e-06
+Epoch 39, Loss: 1.0547150395723292e-06
+Epoch 40, Loss: 1.0598797189231845e-06
+finished 9/10.
+Epoch 1, Loss: 1.07885027773591e-06
+Epoch 2, Loss: 1.0413236964268435e-06
+Epoch 3, Loss: 1.1598536502788192e-06
+Epoch 4, Loss: 1.2471083209675272e-06
+Epoch 5, Loss: 1.0627378742356085e-06
+Epoch 6, Loss: 1.3057819614914478e-06
+Epoch 7, Loss: 1.0983917263729382e-06
+Epoch 8, Loss: 1.1150375485158293e-06
+Epoch 9, Loss: 1.145036048910697e-06
+Epoch 10, Loss: 1.0729074119808502e-06
+Epoch 11, Loss: 1.3434351558316848e-06
+Epoch 12, Loss: 1.140923859566101e-06
+Epoch 13, Loss: 1.0799005849548848e-06
+Epoch 14, Loss: 1.1305159432595247e-06
+Epoch 15, Loss: 1.313310463046946e-06
+Epoch 16, Loss: 1.0850838521037076e-06
+Epoch 17, Loss: 1.2762065580318449e-06
+Epoch 18, Loss: 1.5101677718121208e-06
+Epoch 19, Loss: 1.3661654520547018e-06
+Epoch 20, Loss: 1.1405541727071977e-06
+Epoch 21, Loss: 1.4015337001183071e-06
+Epoch 22, Loss: 1.2685220326602576e-06
+Epoch 23, Loss: 1.3967123322800034e-06
+Epoch 24, Loss: 1.31317783598206e-06
+Epoch 25, Loss: 1.1661682492558612e-06
+Epoch 26, Loss: 1.3838487348039052e-06
+Epoch 27, Loss: 9.07862249732716e-07
+Epoch 28, Loss: 1.19988769711199e-06
+Epoch 29, Loss: 1.2568924830702598e-06
+Epoch 30, Loss: 9.307789696322289e-07
+Epoch 31, Loss: 1.1334375358273974e-06
+Epoch 32, Loss: 8.947598189479322e-07
+Epoch 33, Loss: 1.238549521076493e-06
+Epoch 34, Loss: 1.0332704960092088e-06
+Epoch 35, Loss: 9.926884104061173e-07
+Epoch 36, Loss: 1.0135651336895534e-06
+Epoch 37, Loss: 8.99503083928721e-07
+Epoch 38, Loss: 1.0536692684581795e-06
+Epoch 39, Loss: 1.1764304190364783e-06
+Epoch 40, Loss: 1.225209689437179e-06
+finished 10/10.
+Training complete.
+  Evaluating on 10 held-out traces...
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+No applicable actions, giving up.
+  → State Acc = 97.47% (±0.73)   Action Acc = 100.00% (±0.00)
+
+================================================================
+  DOMAIN: puzzle8
+================================================================
+  predicates(token map): 3  token_size=70  action_space=20
+  Generating 40 training traces (5 actions each)...
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+[LIMIT] Reached step cap 5, terminating.
+  Got 40 valid training traces.
+  Training Att_PAM (iterations=10, lr=0.0001)...
+Epoch 1, Loss: 0.001602228614501655
+Epoch 2, Loss: 0.0007854366791434586
+Epoch 3, Loss: 0.000636162853334099
+Epoch 4, Loss: 0.0005782188731245696
+Epoch 5, Loss: 0.0005171344499103725
+Epoch 6, Loss: 0.0004598697880282998
+Epoch 7, Loss: 0.0003662496281322092
+Epoch 8, Loss: 0.00028183997492305937
+Epoch 9, Loss: 0.00023065465502440928
+Epoch 10, Loss: 0.00021003019064664842
+Epoch 11, Loss: 0.00018310005543753505
+Epoch 12, Loss: 0.0001575550384586677
+Epoch 13, Loss: 0.00014575120294466615
+Epoch 14, Loss: 0.00013522861991077662
+Epoch 15, Loss: 0.00012350080069154502
+Epoch 16, Loss: 0.0001152305689174682
+Epoch 17, Loss: 0.00010660550324246288
+Epoch 18, Loss: 0.00010163451515836641
+Epoch 19, Loss: 9.089733503060415e-05
+Epoch 20, Loss: 8.803133387118578e-05
+Epoch 21, Loss: 8.195013069780543e-05
+Epoch 22, Loss: 7.644998404430226e-05
+Epoch 23, Loss: 7.531865703640506e-05
+Epoch 24, Loss: 6.698869256069884e-05
+Epoch 25, Loss: 6.878797721583396e-05
+Epoch 26, Loss: 6.307321164058521e-05
+Epoch 27, Loss: 6.023516471032053e-05
+Epoch 28, Loss: 5.6528228742536155e-05
+Epoch 29, Loss: 5.461630498757586e-05
+Epoch 30, Loss: 5.1273356802994385e-05
+Epoch 31, Loss: 4.8180853627854955e-05
+Epoch 32, Loss: 4.5636292634299024e-05
+Epoch 33, Loss: 4.230830745655112e-05
+Epoch 34, Loss: 3.947256118408404e-05
+Epoch 35, Loss: 3.6312177689978854e-05
+Epoch 36, Loss: 3.405402167118154e-05
+Epoch 37, Loss: 3.474726545391604e-05
+Epoch 38, Loss: 3.292990295449272e-05
+Epoch 39, Loss: 3.257427306380123e-05
+Epoch 40, Loss: 3.278292570030317e-05
+finished 1/10.
+Epoch 1, Loss: 3.086627330048941e-05
+Epoch 2, Loss: 2.8244556597201152e-05
+Epoch 3, Loss: 2.7012221107725053e-05
+Epoch 4, Loss: 2.5772795925149695e-05
+Epoch 5, Loss: 2.4620027397759257e-05
+Epoch 6, Loss: 2.4452212892356327e-05
+Epoch 7, Loss: 2.4672593281138688e-05
+Epoch 8, Loss: 2.2881861877976916e-05
+Epoch 9, Loss: 2.3577250613016076e-05
+Epoch 10, Loss: 2.3964068532222882e-05
+Epoch 11, Loss: 2.0220067017362454e-05
+Epoch 12, Loss: 2.026534311880823e-05
+Epoch 13, Loss: 1.88987934961915e-05
+Epoch 14, Loss: 2.0924756972817705e-05
+Epoch 15, Loss: 1.9306921967654488e-05
+Epoch 16, Loss: 1.934104730025865e-05
+Epoch 17, Loss: 1.8527745851315558e-05
+Epoch 18, Loss: 1.746345587889664e-05
+Epoch 19, Loss: 1.8553429981693625e-05
+Epoch 20, Loss: 1.7199428839376196e-05
+Epoch 21, Loss: 1.848342471930664e-05
+Epoch 22, Loss: 1.620038783585187e-05
+Epoch 23, Loss: 1.6334352039848454e-05
+Epoch 24, Loss: 1.7674182890914382e-05
+Epoch 25, Loss: 1.6536248585907744e-05
+Epoch 26, Loss: 1.6083370792330242e-05
+Epoch 27, Loss: 1.5075941701070405e-05
+Epoch 28, Loss: 1.449308474548161e-05
+Epoch 29, Loss: 1.40875101351412e-05
+Epoch 30, Loss: 1.3439055692288093e-05
+Epoch 31, Loss: 1.290778072871035e-05
+Epoch 32, Loss: 1.2557944137370214e-05
+Epoch 33, Loss: 1.287607738049701e-05
+Epoch 34, Loss: 1.3066210340184625e-05
+Epoch 35, Loss: 1.2695544501184487e-05
+Epoch 36, Loss: 1.2233436973474453e-05
+Epoch 37, Loss: 1.231923779414501e-05
+Epoch 38, Loss: 1.1728115168807562e-05
+Epoch 39, Loss: 1.1605892359511926e-05
+Epoch 40, Loss: 1.0915634084085468e-05
+finished 2/10.
+Epoch 1, Loss: 1.1098462528025265e-05
+Epoch 2, Loss: 1.0696884965000209e-05
+Epoch 3, Loss: 1.0727363223850261e-05
+Epoch 4, Loss: 1.0790594387799501e-05
+Epoch 5, Loss: 1.0617146836011671e-05
+Epoch 6, Loss: 1.0961202133330516e-05
+Epoch 7, Loss: 9.558949932397809e-06
+Epoch 8, Loss: 1.0354487312724813e-05
+Epoch 9, Loss: 9.250189032172785e-06
+Epoch 10, Loss: 9.557571684126742e-06
+Epoch 11, Loss: 9.459850480197929e-06
+Epoch 12, Loss: 9.564809988660273e-06
+Epoch 13, Loss: 8.813537351670676e-06
+Epoch 14, Loss: 8.880525274435059e-06
+Epoch 15, Loss: 9.537036385154352e-06
+Epoch 16, Loss: 9.15664786589332e-06
+Epoch 17, Loss: 9.000569298223126e-06
+Epoch 18, Loss: 8.461304605589249e-06
+Epoch 19, Loss: 8.807794984022621e-06
+Epoch 20, Loss: 8.81341147760395e-06
+Epoch 21, Loss: 8.706771768629552e-06
+Epoch 22, Loss: 8.49223833938595e-06
+Epoch 23, Loss: 8.50071883178316e-06
+Epoch 24, Loss: 7.71140075812582e-06
+Epoch 25, Loss: 8.299007822643034e-06
+Epoch 26, Loss: 7.721140718786046e-06
+Epoch 27, Loss: 7.90580852481071e-06
+Epoch 28, Loss: 7.3599348979769275e-06
+Epoch 29, Loss: 6.909598050697241e-06
+Epoch 30, Loss: 7.600592107337434e-06
+Epoch 31, Loss: 7.375369477813365e-06
+Epoch 32, Loss: 7.5379932241048666e-06
+Epoch 33, Loss: 7.056114736769814e-06
+Epoch 34, Loss: 7.266694410645869e-06
+Epoch 35, Loss: 6.590595239686081e-06
+Epoch 36, Loss: 6.588842916244176e-06
+Epoch 37, Loss: 6.1791168263880534e-06
+Epoch 38, Loss: 6.055771427782019e-06
+Epoch 39, Loss: 6.448298699979205e-06
+Epoch 40, Loss: 5.9274264458508695e-06
+finished 3/10.
+Epoch 1, Loss: 5.781465006293729e-06
+Epoch 2, Loss: 6.7298840804141944e-06
+Epoch 3, Loss: 5.627313566947123e-06
+Epoch 4, Loss: 5.585290728049585e-06
+Epoch 5, Loss: 6.20305072516203e-06
+Epoch 6, Loss: 5.974776649964042e-06
+Epoch 7, Loss: 5.404001058195718e-06
+Epoch 8, Loss: 6.250701790122548e-06
+Epoch 9, Loss: 5.7015367929125205e-06
+Epoch 10, Loss: 6.069498340366408e-06
+Epoch 11, Loss: 5.664676518790657e-06
+Epoch 12, Loss: 5.750588934461121e-06
+Epoch 13, Loss: 5.328632960299729e-06
+Epoch 14, Loss: 5.332151158654597e-06
+Epoch 15, Loss: 5.803688145533669e-06
+Epoch 16, Loss: 5.125455845700344e-06
+Epoch 17, Loss: 5.199247789278161e-06
+Epoch 18, Loss: 4.881652239419055e-06
+Epoch 19, Loss: 5.575574414251605e-06
+Epoch 20, Loss: 5.0357329200778626e-06
+Epoch 21, Loss: 5.303439047565917e-06
+Epoch 22, Loss: 6.4495212427573275e-06
+Epoch 23, Loss: 5.420479919848731e-06
+Epoch 24, Loss: 4.703113336290698e-06
+Epoch 25, Loss: 4.7031038775458e-06
+Epoch 26, Loss: 4.3109527723572684e-06
+Epoch 27, Loss: 5.041126951255137e-06
+Epoch 28, Loss: 5.588920612353832e-06
+Epoch 29, Loss: 4.465564961719792e-06
+Epoch 30, Loss: 4.5322522055357695e-06
+Epoch 31, Loss: 4.80078206237522e-06
+Epoch 32, Loss: 4.587019611790311e-06
+Epoch 33, Loss: 4.541217367659556e-06
+Epoch 34, Loss: 4.733955938718281e-06
+Epoch 35, Loss: 5.012684414396062e-06
+Epoch 36, Loss: 4.476278718357207e-06
+Epoch 37, Loss: 4.9611735448706895e-06
+Epoch 38, Loss: 4.263689243089175e-06
+Epoch 39, Loss: 4.075400738656754e-06
+Epoch 40, Loss: 4.237128359818599e-06
+finished 4/10.
+Epoch 1, Loss: 4.186499154457124e-06
+Epoch 2, Loss: 4.561397599900374e-06
+Epoch 3, Loss: 4.060597257193877e-06
+Epoch 4, Loss: 4.371039085526718e-06
+Epoch 5, Loss: 4.1071171835938e-06
+Epoch 6, Loss: 4.209208236716222e-06
+Epoch 7, Loss: 4.550543326331535e-06
+Epoch 8, Loss: 3.844985803880263e-06
+Epoch 9, Loss: 4.325636746216333e-06
+Epoch 10, Loss: 4.215678563923575e-06
+Epoch 11, Loss: 4.181781514489558e-06
+Epoch 12, Loss: 3.884994384861784e-06
+Epoch 13, Loss: 4.3848036511917595e-06
+Epoch 14, Loss: 3.7320954106689895e-06
+Epoch 15, Loss: 3.971012301917654e-06
+Epoch 16, Loss: 4.106135384063236e-06
+Epoch 17, Loss: 3.900411229551537e-06
+Epoch 18, Loss: 3.98684123865678e-06
+Epoch 19, Loss: 3.939495854865527e-06
+Epoch 20, Loss: 3.5951450627180746e-06
+Epoch 21, Loss: 3.6019465369463433e-06
+Epoch 22, Loss: 3.6150843698123934e-06
+Epoch 23, Loss: 3.558389926183736e-06
+Epoch 24, Loss: 3.6849653042736465e-06
+Epoch 25, Loss: 3.851237943308661e-06
+Epoch 26, Loss: 3.715896764333593e-06
+Epoch 27, Loss: 3.437772602410405e-06
+Epoch 28, Loss: 3.290130553068593e-06
+Epoch 29, Loss: 3.599012188715278e-06
+Epoch 30, Loss: 3.821578411589144e-06
+Epoch 31, Loss: 3.0477949167107e-06
+Epoch 32, Loss: 3.6696298593597023e-06
+Epoch 33, Loss: 3.147195411656867e-06
+Epoch 34, Loss: 3.3438431728427533e-06
+Epoch 35, Loss: 3.4623864848981613e-06
+Epoch 36, Loss: 3.5479323742038104e-06
+Epoch 37, Loss: 3.311017553642159e-06
+Epoch 38, Loss: 3.327539889141917e-06
+Epoch 39, Loss: 2.7623752430372407e-06
+Epoch 40, Loss: 3.407049234738224e-06
+finished 5/10.
+Epoch 1, Loss: 3.3818295833043523e-06
+Epoch 2, Loss: 3.2738298159529224e-06
+Epoch 3, Loss: 3.2164314688998273e-06
+Epoch 4, Loss: 3.274015352872084e-06
+Epoch 5, Loss: 3.159864263579948e-06
+Epoch 6, Loss: 3.046475649171043e-06
+Epoch 7, Loss: 3.332405503897462e-06
+Epoch 8, Loss: 3.0852400414005386e-06
+Epoch 9, Loss: 3.085222851950675e-06
+Epoch 10, Loss: 3.2521850698685737e-06
+Epoch 11, Loss: 2.8426524750102546e-06
+Epoch 12, Loss: 2.9162857117626116e-06
+Epoch 13, Loss: 3.0692173368151997e-06
+Epoch 14, Loss: 3.2671689950802827e-06
+Epoch 15, Loss: 2.919414146163035e-06
+Epoch 16, Loss: 3.2290673971147043e-06
+Epoch 17, Loss: 2.652942339409492e-06
+Epoch 18, Loss: 2.84327611552726e-06
+Epoch 19, Loss: 2.7790621061285493e-06
+Epoch 20, Loss: 2.734640111157205e-06
+Epoch 21, Loss: 2.8670405754382957e-06
+Epoch 22, Loss: 3.029395520570688e-06
+Epoch 23, Loss: 2.9227620416349965e-06
+Epoch 24, Loss: 3.1323792427428997e-06
+Epoch 25, Loss: 2.6945539502776227e-06
+Epoch 26, Loss: 2.877142014767742e-06
+Epoch 27, Loss: 2.8499467134679433e-06
+Epoch 28, Loss: 2.735436282819137e-06
+Epoch 29, Loss: 2.9161946713429645e-06
+Epoch 30, Loss: 3.2312298571923746e-06
+Epoch 31, Loss: 2.725270269365865e-06
+Epoch 32, Loss: 2.833574944816064e-06
+Epoch 33, Loss: 2.8293593913986113e-06
+Epoch 34, Loss: 2.642154777277028e-06
+Epoch 35, Loss: 2.9461713893397247e-06
+Epoch 36, Loss: 2.921525492638466e-06
+Epoch 37, Loss: 2.636931412780541e-06
+Epoch 38, Loss: 2.528812092350563e-06
+Epoch 39, Loss: 2.3754575522616507e-06
+Epoch 40, Loss: 2.8929690415679944e-06
+finished 6/10.
+Epoch 1, Loss: 2.3858733584347647e-06
+Epoch 2, Loss: 2.4793980628601275e-06
+Epoch 3, Loss: 2.4512588424840943e-06
+Epoch 4, Loss: 2.866225577236037e-06
+Epoch 5, Loss: 2.7031376248487504e-06
+Epoch 6, Loss: 2.871706465157331e-06
+Epoch 7, Loss: 2.3525154574599584e-06
+Epoch 8, Loss: 2.8601366466318723e-06
+Epoch 9, Loss: 2.6787281512952177e-06
+Epoch 10, Loss: 2.167172942790785e-06
+Epoch 11, Loss: 2.193039017583942e-06
+Epoch 12, Loss: 2.382763386776787e-06
+Epoch 13, Loss: 2.2264684048423077e-06
+Epoch 14, Loss: 2.6156036255997606e-06
+Epoch 15, Loss: 2.4480020329065157e-06
+Epoch 16, Loss: 2.3925560526549818e-06
+Epoch 17, Loss: 2.220480882897391e-06
+Epoch 18, Loss: 2.4464948182867374e-06
+Epoch 19, Loss: 2.390369490967714e-06
+Epoch 20, Loss: 2.438824776618276e-06
+Epoch 21, Loss: 2.635321652633138e-06
+Epoch 22, Loss: 2.5411934529984137e-06
+Epoch 23, Loss: 2.7193159439775627e-06
+Epoch 24, Loss: 2.12382797144528e-06
+Epoch 25, Loss: 2.316846530447947e-06
+Epoch 26, Loss: 2.065250646410277e-06
+Epoch 27, Loss: 2.08063424906868e-06
+Epoch 28, Loss: 2.0836891508224655e-06
+Epoch 29, Loss: 1.8679766981222202e-06
+Epoch 30, Loss: 1.939477283485758e-06
+Epoch 31, Loss: 2.134210399162839e-06
+Epoch 32, Loss: 2.1597580598609057e-06
+Epoch 33, Loss: 2.1395445401140024e-06
+Epoch 34, Loss: 2.3912879441922995e-06
+Epoch 35, Loss: 2.0213251445966307e-06
+Epoch 36, Loss: 2.288905034220079e-06
+Epoch 37, Loss: 1.99423116100661e-06
+Epoch 38, Loss: 1.9066559616476297e-06
+Epoch 39, Loss: 1.9996621176687768e-06
+Epoch 40, Loss: 2.1191367068240654e-06
+finished 7/10.
+Epoch 1, Loss: 2.131587234543986e-06
+Epoch 2, Loss: 2.4778164970484793e-06
+Epoch 3, Loss: 1.7522251710033742e-06
+Epoch 4, Loss: 2.142747462130501e-06
+Epoch 5, Loss: 2.029928464253317e-06
+Epoch 6, Loss: 1.8926732536783675e-06
+Epoch 7, Loss: 1.9702533791132737e-06
+Epoch 8, Loss: 2.0913103071507066e-06
+Epoch 9, Loss: 2.0276911527616903e-06
+Epoch 10, Loss: 2.265337252538302e-06
+Epoch 11, Loss: 2.214974392700242e-06
+Epoch 12, Loss: 1.951967851709924e-06
+Epoch 13, Loss: 1.7722137272357942e-06
+Epoch 14, Loss: 2.344100266782334e-06
+Epoch 15, Loss: 2.4704574570932893e-06
+Epoch 16, Loss: 2.0284021502448013e-06
+Epoch 17, Loss: 2.2218940102902705e-06
+Epoch 18, Loss: 1.893924127216451e-06
+Epoch 19, Loss: 1.8450985862727976e-06
+Epoch 20, Loss: 1.962043279490899e-06
+Epoch 21, Loss: 1.7113724879891378e-06
+Epoch 22, Loss: 1.875697580544511e-06
+Epoch 23, Loss: 1.9816940493910805e-06
+Epoch 24, Loss: 2.103098086081445e-06
+Epoch 25, Loss: 1.8971585632243659e-06
+Epoch 26, Loss: 1.9011730728379916e-06
+Epoch 27, Loss: 1.8286534896105876e-06
+Epoch 28, Loss: 1.9106874788121787e-06
+Epoch 29, Loss: 2.0051696083100977e-06
+Epoch 30, Loss: 1.9597569462348472e-06
+Epoch 31, Loss: 1.7219933170053992e-06
+Epoch 32, Loss: 2.0335762201284526e-06
+Epoch 33, Loss: 1.890738985821372e-06
+Epoch 34, Loss: 1.8264881418872391e-06
+Epoch 35, Loss: 1.6508760836586589e-06
+Epoch 36, Loss: 2.0359489099064376e-06
+Epoch 37, Loss: 1.6018880160117988e-06
+Epoch 38, Loss: 1.9993253772554453e-06
+Epoch 39, Loss: 1.8413352336210664e-06
+Epoch 40, Loss: 1.6907363260543207e-06
+finished 8/10.
+Epoch 1, Loss: 1.931192855408881e-06
+Epoch 2, Loss: 1.8061458831652998e-06
+Epoch 3, Loss: 1.6127504068208509e-06
+Epoch 4, Loss: 1.6936021438596072e-06
+Epoch 5, Loss: 1.5331039776356191e-06
+Epoch 6, Loss: 1.7833365291153314e-06
+Epoch 7, Loss: 1.7074828519980656e-06
+Epoch 8, Loss: 1.5865291516092839e-06
+Epoch 9, Loss: 1.700795201031724e-06
+Epoch 10, Loss: 1.4891682667439454e-06
+Epoch 11, Loss: 1.7125917793237022e-06
+Epoch 12, Loss: 1.6360284007532755e-06
+Epoch 13, Loss: 1.6528822015970945e-06
+Epoch 14, Loss: 1.5722625903435983e-06
+Epoch 15, Loss: 1.6216720950978924e-06
+Epoch 16, Loss: 1.513131905994669e-06
+Epoch 17, Loss: 1.6178557871171506e-06
+Epoch 18, Loss: 1.6616446600892232e-06
+Epoch 19, Loss: 1.4497225492959843e-06
+Epoch 20, Loss: 1.6500095625815447e-06
+Epoch 21, Loss: 1.6510680097781006e-06
+Epoch 22, Loss: 1.7065568499674556e-06
+Epoch 23, Loss: 1.387712904943328e-06
+Epoch 24, Loss: 1.5762767134219757e-06
+Epoch 25, Loss: 1.4631108115281678e-06
+Epoch 26, Loss: 1.6007160184017266e-06
+Epoch 27, Loss: 1.8361523871135431e-06
+Epoch 28, Loss: 1.6131038591993274e-06
+Epoch 29, Loss: 1.6198998764593853e-06
+Epoch 30, Loss: 1.5984350284270476e-06
+Epoch 31, Loss: 1.5047913393573253e-06
+Epoch 32, Loss: 1.64946720815351e-06
+Epoch 33, Loss: 1.3806991091769306e-06
+Epoch 34, Loss: 1.3492704056261573e-06
+Epoch 35, Loss: 1.69862323673442e-06
+Epoch 36, Loss: 1.7008524082484655e-06
+Epoch 37, Loss: 1.568319157740916e-06
+Epoch 38, Loss: 1.7082315707739327e-06
+Epoch 39, Loss: 1.6067568822109024e-06
+Epoch 40, Loss: 1.484897165937582e-06
+finished 9/10.
+Epoch 1, Loss: 1.6927582919379347e-06
+Epoch 2, Loss: 1.5157381994868046e-06
+Epoch 3, Loss: 1.4246621731217601e-06
+Epoch 4, Loss: 1.4156626548356144e-06
+Epoch 5, Loss: 1.4956754057493526e-06
+Epoch 6, Loss: 1.4117965292825829e-06
+Epoch 7, Loss: 1.3590648222816526e-06
+Epoch 8, Loss: 1.4070304359847796e-06
+Epoch 9, Loss: 1.3454531881507137e-06
+Epoch 10, Loss: 1.2992610663786762e-06
+Epoch 11, Loss: 1.4335287232825067e-06
+Epoch 12, Loss: 1.4647580201199163e-06
+Epoch 13, Loss: 1.4805478940616013e-06
+Epoch 14, Loss: 1.4715700899614604e-06
+Epoch 15, Loss: 1.4081234667173703e-06
+Epoch 16, Loss: 1.5133964552660473e-06
+Epoch 17, Loss: 1.3894049970986088e-06
+Epoch 18, Loss: 1.35320383378712e-06
+Epoch 19, Loss: 1.4545451222147675e-06
+Epoch 20, Loss: 1.3880510778108146e-06
+Epoch 21, Loss: 1.505341083429812e-06
+Epoch 22, Loss: 1.2009350257358164e-06
+Epoch 23, Loss: 1.494147318226169e-06
+Epoch 24, Loss: 1.3944262946097297e-06
+Epoch 25, Loss: 1.1929144193345564e-06
+Epoch 26, Loss: 1.5771795688124256e-06
+Epoch 27, Loss: 1.2777167739841388e-06
+Epoch 28, Loss: 1.3345673323783558e-06
+Epoch 29, Loss: 1.4368238907991326e-06
+Epoch 30, Loss: 1.1168306173203746e-06
+Epoch 31, Loss: 1.3126807289154386e-06
+Epoch 32, Loss: 1.1479216254883795e-06
+Epoch 33, Loss: 1.1143611118313856e-06
+Epoch 34, Loss: 1.2930773664265872e-06
+Epoch 35, Loss: 1.6074402992671822e-06
+Epoch 36, Loss: 1.170082759927027e-06
+Epoch 37, Loss: 1.2440617410902633e-06
+Epoch 38, Loss: 1.3878845720682876e-06
+Epoch 39, Loss: 1.3285532986628823e-06
+Epoch 40, Loss: 1.4049728633835912e-06
+finished 10/10.
+Training complete.
+  Evaluating on 10 held-out traces...
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+[LIMIT] Reached step cap 20, terminating.
+  → State Acc = 98.10% (±0.11)   Action Acc = 100.00% (±0.00)
+
+
+========================================================================================
+  PHASE 1 — STATE/ACTION ACCURACY vs ARTICLE (Table 2)
+========================================================================================
+Domain           |  Ours State  Ours Act | w/o State  w/o Act | +MILP State +MILP Act
+-------------------------------------------------------------------------------------
+hanoi            |      97.47%   100.00% |    97.15%   57.60% |      98.55%    81.40%
+puzzle8          |      98.10%   100.00% |    99.90%   97.40% |      99.77%    92.60%
+-------------------------------------------------------------------------------------
+Baseline = paper Table 2. Fair comparison is vs the 'w/o MILP' columns
+(our network is statistical and has no MILP layer). 'Err' is N/A to us.
+
+Results saved → /Users/yogevk/Downloads/new research/phase 1/results/phase1_results.json

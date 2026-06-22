@@ -17,14 +17,45 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
 import json
 import os
+import signal
+import atexit
+import sys
+from multiprocessing import resource_tracker
 
-# ── Domain setup (mirrors Network.py) ────────────────────────────────────────
+# ── Proper cleanup handlers ──────────────────────────────────────────────────
+
+def cleanup_resources():
+    """Clean up resources on exit."""
+    try:
+        # Suppress resource tracker warnings during cleanup
+        resource_tracker.unregister = lambda *args: None
+    except:
+        pass
+    # Close any matplotlib figures
+    plt.close('all')
+
+def signal_handler(signum, frame):
+    """Handle termination signals gracefully."""
+    print(f"\n\n{'='*60}")
+    print("  Received interrupt signal, cleaning up...")
+    print(f"{'='*60}\n")
+    cleanup_resources()
+    sys.exit(0)
+
+# Register cleanup handlers
+atexit.register(cleanup_resources)
+signal.signal(signal.SIGINT, signal_handler)
+signal.signal(signal.SIGTERM, signal_handler)
+
+# Suppress resource_tracker warnings about leaked semaphores
+import warnings
+warnings.filterwarnings('ignore', category=UserWarning, module='multiprocessing.resource_tracker')
 
 indexMn = IndexManager(start_index=20)
 
 
 def build_domains() -> dict[str, Domain_sim]:
-    """Instantiate all four Domain_sim objects (pred_offsets chain automatically)."""
+    """Instantiate all six Domain_sim objects (pred_offsets chain automatically)."""
     logistics = Domain_sim(
         indexManager=indexMn,
         DOMAIN_FILE="./pddlDomains/logistics_domain.pddl",
@@ -51,17 +82,33 @@ def build_domains() -> dict[str, Domain_sim]:
         pred_offset=logistics.pred_size + blocksworld.pred_size + gripper.pred_size,
         action_offset=11,
     )
+    hanoi = Domain_sim(
+        indexManager=indexMn,
+        DOMAIN_FILE="./pddlDomains/hanoi_domain.pddl",
+        PROBLEM_FILE="./pddlDomains/hanoi_problem.pddl",
+        pred_offset=logistics.pred_size + blocksworld.pred_size + gripper.pred_size + rooms.pred_size,
+        action_offset=14,
+    )
+    puzzle8 = Domain_sim(
+        indexManager=indexMn,
+        DOMAIN_FILE="./pddlDomains/puzzle8_domain.pddl",
+        PROBLEM_FILE="./pddlDomains/puzzle8_problem.pddl",
+        pred_offset=logistics.pred_size + blocksworld.pred_size + gripper.pred_size + rooms.pred_size + hanoi.pred_size,
+        action_offset=15,
+    )
     return {
         "logistics": logistics,
-        "blocksworld": blocksworld,
+        "blockworld": blocksworld,
         "gripper": gripper,
         "rooms": rooms,
+        "hanoi": hanoi,
+        "puzzle8": puzzle8,
     }
 
 
 # ── Core: train with increasing data & evaluate at each step ─────────────────
 
-def train_and_evaluate(
+async def train_and_evaluate(
     domains: dict[str, Domain_sim],
     trace_size: int = 5,
     trace_length_eval: int = 20,
@@ -113,7 +160,7 @@ def train_and_evaluate(
             for _ in tqdm(range(m), desc=f"  {domain.name} traces"):
                 trace = None
                 while trace is None or np.shape(trace)[0] != trace_size * 2 - 1:
-                    trace = asyncio.run(domain.Generate_trace(trace_size))
+                    trace = await domain.Generate_trace(trace_size)
                 traces.append(trace)
 
         traces = np.array(traces)
@@ -132,14 +179,14 @@ def train_and_evaluate(
         )
         model.train(
             traces,
-            lr=0.00001,
+            lr=0.000001/m,
             iterations=training_iterations,
-            delta=0.0001 / m,
+            delta=0.00005 / m,
         )
 
         # ── 3. evaluate on each domain ───────────────────────────
         for domain in domain_list:
-            test_trace = asyncio.run(domain.Generate_trace(trace_length_eval))
+            test_trace =  await domain.Generate_trace(trace_length_eval)
             domain_prob = prob_dicts[domain.name]  # use saved prob dict
 
             N = 0
@@ -203,7 +250,9 @@ def train_and_evaluate(
 # ── Graph generation (line plots like Network.py) ────────────────────────────
 
 def _compute_avg_per_m(m_vals, values, trace_size):
-    """Group data points by m value, compute average per m, return sorted x and y_avg."""
+    """Group data points by m value, compute average and std per m,
+    return sorted x, y_avg, y_std.
+    """
     from collections import defaultdict
     groups = defaultdict(list)
     for m, v in zip(m_vals, values):
@@ -211,7 +260,8 @@ def _compute_avg_per_m(m_vals, values, trace_size):
     sorted_ms = sorted(groups.keys())
     x_avg = [m * (trace_size * 2 - 1) for m in sorted_ms]
     y_avg = [np.mean(groups[m]) for m in sorted_ms]
-    return x_avg, y_avg
+    y_std = [np.std(groups[m]) for m in sorted_ms]
+    return x_avg, y_avg, y_std
 
 
 def plot_metrics_over_training(
@@ -244,14 +294,12 @@ def plot_metrics_over_training(
 
         colors = {"identifier": "tab:blue", "truth": "tab:orange", "instance": "tab:green"}
         for mname, color in colors.items():
-            # Scatter all individual data points
-            ax1.scatter(x_all, metrics[mname], alpha=0.4, s=30, color=color, label=f"{mname} (runs)" if has_reps else mname)
-            if has_reps:
-                # Draw average line
-                x_avg, y_avg = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
-                ax1.plot(x_avg, y_avg, marker="o", color=color, linewidth=2, label=f"{mname} (avg)")
-            else:
-                ax1.plot(x_all, metrics[mname], marker="o", color=color, linewidth=2)
+            # Plot only the average line and ±1σ shaded band (no individual-run points)
+            x_avg, y_avg, y_std = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
+            y_avg = np.array(y_avg)
+            y_std = np.array(y_std)
+            ax1.plot(x_avg, y_avg, marker="o", color=color, linewidth=2, label=f"{mname} (avg)")
+            ax1.fill_between(x_avg, y_avg - y_std, y_avg + y_std, color=color, alpha=0.15, linewidth=0)
 
         ax1.set_ylabel("Loss (MAE)")
         ax1.set_xlabel("Number of training states")
@@ -290,12 +338,12 @@ def _plot_combined_comparison(
             x_all = [m * (trace_size * 2 - 1) for m in m_vals]
             has_reps = len(m_vals) > len(set(m_vals))
 
-            ax.scatter(x_all, metrics[mname], alpha=0.4, s=30, label=f"{dname} (runs)" if has_reps else dname)
-            if has_reps:
-                x_avg, y_avg = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
-                ax.plot(x_avg, y_avg, marker="o", linewidth=2, label=f"{dname} (avg)")
-            else:
-                ax.plot(x_all, metrics[mname], marker="o", linewidth=2)
+            # Plot only the average line and ±1σ shaded band for each domain
+            x_avg, y_avg, y_std = _compute_avg_per_m(m_vals, metrics[mname], trace_size)
+            y_avg = np.array(y_avg)
+            y_std = np.array(y_std)
+            ax.plot(x_avg, y_avg, marker="o", linewidth=2, label=f"{dname} (avg)")
+            ax.fill_between(x_avg, y_avg - y_std, y_avg + y_std, alpha=0.12)
 
         ax.set_ylabel("Loss (MAE)")
         ax.set_title(f"{mname.capitalize()}")
@@ -344,7 +392,7 @@ def save_results_json(summary: list, num_domains: int, filepath: str):
 
 # ── Interactive CLI ──────────────────────────────────────────────────────────
 
-def interactive_menu():
+async def interactive_menu():
     """Main interactive loop."""
     print("=" * 60)
     print("  TRAIN & EVALUATE — Performance vs Training Length")
@@ -431,7 +479,7 @@ def interactive_menu():
     print(f"  Trace sz: {trace_size} actions/trace, eval length: {trace_length_eval}")
     print("=" * 60)
 
-    metric_history, summary, model = train_and_evaluate(
+    metric_history, summary, model = await train_and_evaluate(
         domains=selected,
         trace_size=trace_size,
         trace_length_eval=trace_length_eval,
@@ -488,4 +536,20 @@ def interactive_menu():
 # ── Entry point ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    interactive_menu()
+    try:
+        asyncio.run(interactive_menu())
+    except KeyboardInterrupt:
+        print(f"\n\n{'='*60}")
+        print("  Received keyboard interrupt, cleaning up...")
+        print(f"{'='*60}\n")
+        cleanup_resources()
+        sys.exit(0)
+    except Exception as e:
+        print(f"\n\n{'='*60}")
+        print(f"  Error occurred: {e}")
+        print("  Cleaning up resources...")
+        print(f"{'='*60}\n")
+        cleanup_resources()
+        raise
+    finally:
+        cleanup_resources()

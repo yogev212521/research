@@ -1,5 +1,5 @@
 (define (domain rooms)
-        (:requirements :typing :equality :disjunctive-preconditions :negative-preconditions :probabilistic-effects)
+        (:requirements :typing :equality :disjunctive-preconditions :negative-preconditions)
         (:types person room)
         (:predicates (at ?p - person ?r - room)
                      (connected ?a ?b - room))
